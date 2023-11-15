@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/workspace_keus.iml" filepath="$PROJECT_DIR$/.idea/workspace_keus.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/keus_prj.iml" filepath="$PROJECT_DIR$/.idea/keus_prj.iml" />
     </modules>
   </component>
 </project>
