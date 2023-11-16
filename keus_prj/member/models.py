@@ -1,5 +1,6 @@
 from django.db import models
 
+
 # Create your models here.
 
 # main_member 테이블 작성
