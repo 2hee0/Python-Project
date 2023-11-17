@@ -39,8 +39,8 @@ class Category(models.Model):
 
 # main_member 테이블 작성
 class Member(AbstractUser):
-    # 주소
-    Address = models.CharField(max_length=1000)
+    # 주소, 현재 빼둠
+    # Address = models.CharField(max_length=1000)
     # 전화번호
     Tell = models.CharField(max_length=200)         
     # 멤버 관련 이넘
