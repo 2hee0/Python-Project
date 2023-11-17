@@ -38,11 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # app 추가
-    # 'main',
-    # 'master',
+    'main',
+    'master',
     'member',
-    # 'board',
-    # 'mypage',
+    'board',
+    'mypage',
 ]
 
 MIDDLEWARE = [
@@ -132,6 +132,3 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# User 제공 테이블 수정
-AUTH_USER_MODEL = 'member.Member'
