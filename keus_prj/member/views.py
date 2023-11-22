@@ -11,11 +11,11 @@ def join(request):
         if form.is_valid():
             member_data = form.cleaned_data
             # 비밀번호 확인 부분
-            if member_data['member_pw'] == member_data['PasswordOK']:
+            if member_data['password'] == member_data['PasswordOK']:
                 Member.objects.create(
-                    member_id=member_data['member_id'],
-                    member_pw=member_data['member_pw'],
-                    tell=member_data['tell'],
+                    username=member_data['username'],
+                    password=member_data['password'],
+                    Tell=member_data['Tell'],
                     email=member_data['email']
                 )
                 return redirect(reverse('login'))  # 가입 성공 페이지(reverse 함수사용 -> member/login 으로 이동)
@@ -29,14 +29,14 @@ def join(request):
 
 def login(request):
     if request.method == 'POST':
-        member_id = request.POST.get('member_id')
-        member_pw = request.POST.get('member_pw')
+        username = request.POST.get('username')
+        password = request.POST.get('password')
 
-        members = Member.objects.filter(member_id=member_id, member_pw=member_pw)
+        members = Member.objects.filter(username=username, password=password)
         if members.exists():
             # 로그인 처리
             member = members.first()  # 검색된 회원중 첫번째 회원을 가져옴
-            request.session['member_id'] = member.member_id
+            request.session['username'] = member.username
             return redirect('/')
         else:
             # 로그인 실패

@@ -62,10 +62,10 @@
             <form method="post" action="{% url 'join' %}" id="join-form" >
                 {% csrf_token %}
                 <a>아이디 입력
-                    <input type="text" name="member_id" placeholder="아이디를 입력해주세요">
+                    <input type="text" name="username" placeholder="아이디를 입력해주세요">
                 </a>
                 <a>비밀번호 입력
-                    <input type="password" name="member_pw" placeholder="비밀번호를 입력하세요">
+                    <input type="password" name="password" placeholder="비밀번호를 입력하세요">
                 </a>
                 <a>비밀번호 확인
                     <input type="password" name="PasswordOK" placeholder="비밀번호를 다시한번 입력해 주세요">
@@ -75,7 +75,7 @@
                     {% endif %}
                 </a>
                 <a>연락처
-                    <input type="text" name="tell" placeholder="전화번호를 입력하세요">
+                    <input type="text" name="Tell" placeholder="전화번호를 입력하세요">
                 </a>
                 <a>이메일
                     <input type="text" name="email" placeholder="이메일을 입력하세요">

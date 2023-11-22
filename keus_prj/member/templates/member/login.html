@@ -65,8 +65,8 @@
             <h3>KEUS 페이지에 오신걸 환영합니다</h3>
             <form method="post" action="{% url 'login' %}" id="login-form">
                 {% csrf_token %}
-                <input type="text" name="member_id" placeholder="ID">
-                <input type="password" name="member_pw" placeholder="Password">
+                <input type="text" name="username" placeholder="ID">
+                <input type="password" name="password" placeholder="Password">
                 <input type="submit" id="login-btn" value="로그인">
             </form>
         </div>
