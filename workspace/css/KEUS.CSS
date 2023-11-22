@@ -54,76 +54,73 @@ a:active {
 
 .main_menu li {
     padding: 0 35px;
-    width: 120px;
     list-style: none;
 }
 
+.main_menu li:hover .sub_menu{
+    opacity: 1;
+    visibility: visible;
+}
+
+
 .main_menu li a {
     position: relative;
-    display: inline-block;
+    display: block;
     line-height: 80px; 
     font-weight: bold;
     font-size: 20px; 
     text-decoration-line: none;
 }
 
-.main_menu li.active a,
-.main_menu li:hover a {
-    color: #0056D6;
+.main_menu li a:hover {
+    border-bottom: 1px solid #0056D6;
 }
 
-.main_menu li a:after {
-    opacity: 0;
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: 3px;
-    background-color: #0056D6;
-    left: 0;
-    bottom: 0;
-    transition: all 0.3s ease-in-out;
-}
 
 /*서브메뉴*/
 
 .sub_menu{
-    display: none;
     position: absolute;
-    z-index: 1;
-    background-color: #fff;
+    background: #fff;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.25s ease-in;
+    list-style: none;
+    padding: 0;
+    top: 120px;
+    text-decoration:none;
 }
+
+.sub_menu li{
+    height: 40px;
+    width: 90px;
+    float: left;
+    padding: 0;
+}
+
 
 .sub_menu li a{
-    font-size: 15px;
-    color: #cecece;
+    font-size: 17px;
+    color: #9b9b9b;
+    height: 17px;
+    line-height: 0px;
+    text-decoration: none;
+    margin-top: 15px;
+}
+.sub_menu li a:not(:last-child) {
+    border-right: 1px solid #333;
+    padding-right: 10px;
 }
 
-.sub_menu li:hover a {
+.sub_menu li a:hover {
     color: #0056D6;
+    opacity: 1;
+    visibility: visible;
+    border: none;
 }
-
-.sub_menu li a:after{
-    opacity: 0;
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: 3px;
-    background-color: #0056D6;
-    left: 0;
-    bottom: 0;
-    transition: all 0.3s ease-in-out;
-}
-
-
-.main_menu:hover .sub_menu{
-    display: flex;
-}
-
-
 
 .header .header_box{
     float: right;
-    border-bottom: 1px solid #cecece;
     width: 100%;
     display: flex;
     flex-direction: row;
@@ -148,15 +145,18 @@ a:active {
 }
 
 
-
-
-
 /*Body*/
+body{
+    width: 100%;
+    height: 100%;
+}
 .body{
+    min-height: 500px;
+    padding-bottom: 60px;
     margin: 0 auto;
     height: 100%;
     width: 1200px;
-    margin-top: 150px;
+    margin-top: 160px;
 }
 
 .body img{
@@ -166,6 +166,8 @@ a:active {
 
 
 /*footer*/
+
+
 .footer{
     height: 200px;
     border-top: 1px solid #cecece;
@@ -186,58 +188,289 @@ a:active {
 
 .login-wrap{
     margin: 0 auto;
-    width: 500px;
-    height: 300px;
+    width: 300px;
+    height: 100%;
+}
+.login-wrap h2{
+    width: 300px;
 }
 
 .login-wrap #login-form{
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
 }
 
 .login-wrap #login-form input{
-    width: 300px;
-    height: 35px;
-    border-radius: 6px;
-    border: 1px solid #cecece;
-    margin: 10px auto;
+    width: 268px;
+    padding: 15px;
+    height: 15px;
+    font-size: 16px;
+    line-height: 24px;
+    border: 1px solid #afafaf;
+    border-radius: 5px;
+    margin: 10px 0;
 }
 
-.login-wrap #login-btn{
-    float: right;
-    background-color: #fff;
-    border-radius: 5px;
-    border: 1px solid #cecece;
+.login-wrap #login-form input#login-btn{
+    height: 45px;
+    width: 300px;
+    background-color: #0056D6;
+    color: #fff;
     cursor: pointer;
+    border-radius: 5px;
+    border: none;
+    font-size: 18px;
+}
+
+.login-wrap #login-form input#login-btn:hover{
+    float: right;
+    background-color: #004ec4;
+    border-radius: 5px;
+    color: #ffffff;
+    cursor: pointer;
+    height: 45px;
+    width: 300px;
+    font-size: 18px;
+}
+.login-wrap #login-form span{
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.join-link{
+    margin: 20px auto;
+    text-align: center;
+    width: 450px;
+    font-size: 18px;
+    border-top: 1px solid #cecece;
+}
+.join-link a{
+    color: #0042a5;
+    margin-left: 10px;
+}
+.join-link p{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+
+
+.link-box{
+    margin: 20px auto;
+    text-align: center;
+    width: 332px;
+    border-bottom: 1px solid #afafaf;
     height: 50px;
-    width: 130px;
-    font-size: 20px;
+}
+
+.link-box a {
+    margin:0 10px;
+    text-decoration: none;
+    color: #333; 
 }
 
 /*회원가입페이지*/
+
+
+
 .join-wrap{
-    width: 500px;
-    height: 500px;
+    width: 360px;
+    height: 100%;
     margin: 0 auto;
 }
-.join-wrap form{
-    text-align: center;
+
+.guidance{
+    font-size: 18px;
+    border: 1px solid #afafaf;
+    border-radius: 10px;
+    width: 100%;
+    height: 100%;
+    padding: 0px 15px 35px 15px;
+    margin-top: 10px;
+}
+.guidance input{
+    width: 15px;
+    height: 15px;
+}
+
+.terms_agree{
+    font-size: 18px;
+}
+.agree_box{
+    margin: 20px 0;
+}
+
+.guidance .agree_box ul{
+    list-style:none;
+    padding: 0;
+}
+    
+.guide_info{
+    float: right;
+    font-size: 15px;
+    text-decoration: underline;
+}
+
+.InpBox{
+    font-size: 20px;
+    border-bottom: 1px solid #afafaf;
+    padding: 10px 0;
+}
+
+.agree_desc{
+    margin: 10px 0;
+}
+
+
+
+
+.item ul{
+    list-style: none;
+    font-size: 22px;
+    padding: 0;
+}
+.item input{
+    width: 100%;
+    padding: 15px;
+    height: 15px;
+    font-size: 16px;
+    line-height: 24px;
+    border: 1px solid #afafaf;
+    border-radius: 5px;
+}
+.item input:focus{
+   outline: 1px solid #2d65f2;
+}
+
+.item #id{
+    margin : 10px 0;
+}
+.item ul li{
+    margin: 15px 0;
+}
+
+.item_input{
     display: flex;
-    font-size: 25px;
     flex-direction: column;
-    align-items: flex-end;
-    align-content: stretch;
+    align-items: flex-start;
+}
+
+.item_input span{
+    margin-bottom: 10px;
+}
+
+.item #idcheck{
+    height: 40px;
+    width: 392px;
+    background-color: #0059df;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
+    font-size: 15px;
+}
+.item #idcheck:hover{
+    height: 40px;
+    width: 392px;
+    background-color: #0042a5;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
+    font-weight: bold;
+    font-size: 15px
+}
+.join-box{
+    width: 100%;
+    margin-top: 30px;
+    text-align: right;
+}
+.join-box input{
+    height: 45px;
+    width: 392px;
+    background-color: #0059df;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
+    font-size: 20px;
+}
+.join-box input:hover{
+    height: 45px;
+    width: 392px;
+    background-color: #0042a5;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
+}
+
+
+/*아이디/비밀번호 찾기*/
+
+.find-item{
+    display: flex;
     justify-content: space-evenly;
 }
-.join-wrap form a{
-    margin-top: 15px;
+
+.find-item ul{
+    list-style: none;
+    font-size: 22px;
+    padding: 0;
 }
-.join-wrap form a input{
-width: 300px;
-    height: 35px;
-    border-radius: 6px;
-    border: 1px solid #cecece;
-    margin: 10px auto;
-    margin-left: 30px;
+.find-item input{
+    width: 100%;
+    padding: 15px;
+    height: 15px;
+    font-size: 16px;
+    line-height: 24px;
+    border: 1px solid #afafaf;
+    border-radius: 5px;
+    
+}
+
+.find-item input:focus{
+   outline: 1px solid #2d65f2;
+   width: 100%;
+    padding: 15px;
+    height: 15px;
+    font-size: 16px;
+    line-height: 24px;
+    border: 1px solid #afafaf;
+    border-radius: 5px;
+}
+.find-form{
+    width: 300px;
+    height: 100%;
+}
+.find-form .item_input{
+    margin: 15px 0;
+}
+.find-box input{
+    height: 45px;
+    width: 332px;
+    background-color: #0059df;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
+    font-size: 20px;
+}
+.find-box input:hover{
+    height: 45px;
+    width: 332px;
+    background-color: #0042a5;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
+}
+.mid-wall{
+    width: 1px;
+    height: 350px;
+    background-color: #a1a1a1;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
