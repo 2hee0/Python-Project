@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+{% load static %}
+<head>
+    <!--CSS연결-->
+    <link rel="stylesheet" href="{% static 'member/css/KEUS.CSS' %}">
+    <!--JS연결-->
+    <script src="{% static 'member/js/KEUS.JS' %}"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<div class="header">
+    <div class="header_box">
+        <div class="btn_box">
+            <button onclick="location.href='{% url 'login' %}'" id="login">로그인</button>
+            <button onclick="location.href='{% url 'join' %}'" id="join">회원가입</button>
+        </div>
+    </div>
+    <div class="container">
+        <h1>회사 홈페이지 헤더 메뉴</h1>
+        <a href="header.html">
+            <img src="{% static 'member/img/logo.png' %}" title="로고">
+        </a>
+        <nav>
+            <ul class="main_menu">
+                <li><a href="#">통계 서비스</a>
+                    <ul class="sub_menu">
+                        <li><a href="#">지역별</a></li>
+                        <li><a href="#">날짜별</a></li>
+                    </ul>
+                </li>
+                <li><a href="">데이터 자료실</a>
+                    <ul class="sub_menu">
+                        <li><a href="#">인포그래픽</a></li>
+                        <li><a href="#">데이터 자료실</a></li>
+                        <li><a href="#">예측 자료실</a></li>
+                    </ul>
+                </li>
+                <li><a href="">알림마당</a>
+                    <ul class="sub_menu">
+                        <li><a href="#">공지사항</a></li>
+                        <li><a href="#">문의게시판</a></li>
+                        <li><a href="#">이벤트</a></li>
+                    </ul>
+                </li>
+                <li><a href="">소개</a>
+                    <ul class="sub_menu">
+                        <li><a href="#">이용안내</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+<!-----------------------------여기서부터--------------------------------->
+<body>
+    <div class="body">
+        <!--페이지별 내용-->
+        <h2>회원가입</h2>
+        <div class="join-wrap">
+            <form method="post" action="{% url 'join' %}" id="join-form" >
+                {% csrf_token %}
+                <a>아이디 입력
+                    <input type="text" name="member_id" placeholder="아이디를 입력해주세요">
+                </a>
+                <a>비밀번호 입력
+                    <input type="password" name="member_pw" placeholder="비밀번호를 입력하세요">
+                </a>
+                <a>비밀번호 확인
+                    <input type="password" name="PasswordOK" placeholder="비밀번호를 다시한번 입력해 주세요">
+                     {% if form.errors.PasswordOK %}
+                        <p style="color: red;">{{ form.errors.PasswordOK.0 }}</p>
+                    <!--css파일에서 글자크기수정 필요! 그리고 하나의 오류메세지를 처리하는 경우 OK 뒤에 INDEX 0 사용-->
+                    {% endif %}
+                </a>
+                <a>연락처
+                    <input type="text" name="tell" placeholder="전화번호를 입력하세요">
+                </a>
+                <a>이메일
+                    <input type="text" name="email" placeholder="이메일을 입력하세요">
+                </a>
+
+            <input type="submit" id="login-btn" value="회원가입">
+            <input type="submit" id="login-btn" value="취소">
+            </form>
+        </div>
+    </div>
+</body>
+<!-----------------------------여기까지--------------------------------->
+<footer>
+    <div class="footer">
+        <div id="footer_box">
+            <a href="https://kostat.go.kr/ansk/">
+                <img  src="{% static 'member/img/tong.png' %}" style="cursor: pointer;">
+            </a>
+            <a href="https://kiccampus.com/kr/index.php">
+                <img  src="{% static 'member/img/KIC.png' %}" style="cursor: pointer;">
+            </a>
+            <p>KEUS 서울시 전기 사용량 통계 사이트</p>
+            <p>Copyright 2023.KEUS All Rights Reserved.㉿</p>
+        </div>
+    </div>
+</footer>
+</html>

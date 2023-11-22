@@ -5,8 +5,10 @@ from django.db import models
 
 # main_member 테이블 작성
 class Member(models.Model):
-    member_id = models.CharField(max_length=200)    # 아이디
+    member_id = models.CharField(max_length=200,unique=True)    # 아이디
     member_pw = models.CharField(max_length=200)    # 비밀번호
+    tell = models.CharField(max_length=20,null=True)  # 연락처
+    email = models.EmailField(null=True)  # 이메일
     created_at = models.DateTimeField(auto_now_add=True)     # 가입일자
     updated_at = models.DateTimeField(auto_now=True)         # 수정일자
 
