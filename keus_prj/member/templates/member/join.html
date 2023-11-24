@@ -5,48 +5,49 @@
     <!--CSS연결-->
     <link rel="stylesheet" href="{% static 'member/css/KEUS.CSS' %}">
     <!--JS연결-->
-    <script src="{% static 'member/js/KEUS.JS' %}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="{% static 'member/js/KEUS.JS' %}" defer></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    
 </head>
 <div class="header">
-    <div class="header_box">
+    <div class="header_box">    
         <div class="btn_box">
             <button onclick="location.href='{% url 'login' %}'" id="login">로그인</button>
             <button onclick="location.href='{% url 'join' %}'" id="join">회원가입</button>
-        </div>
+        </div>  
     </div>
     <div class="container">
         <h1>회사 홈페이지 헤더 메뉴</h1>
-        <a href="header.html">
-            <img src="{% static 'member/img/logo.png' %}" title="로고">
+        <a href="{% url 'header' %}">
+             <img src="{% static 'member/img/logo.png' %}" title="로고">
         </a>
         <nav>
             <ul class="main_menu">
-                <li><a href="#">통계 서비스</a>
-                    <ul class="sub_menu">
-                        <li><a href="#">지역별</a></li>
-                        <li><a href="#">날짜별</a></li>
+                <li><a href="region.html">통계 서비스</a>
+                    <ul class="sub_menu" >
+                        <li><a href="region.html">지역별</a></li>
+                        <li><a href="date.html">날짜별</a></li>
                     </ul>
                 </li>
-                <li><a href="">데이터 자료실</a>
-                    <ul class="sub_menu">
-                        <li><a href="#">인포그래픽</a></li>
-                        <li><a href="#">데이터 자료실</a></li>
-                        <li><a href="#">예측 자료실</a></li>
+                <li><a href="infographic.html">데이터 자료실</a>
+                    <ul class="sub_menu" >
+                        <li style="width: 120px;"><a href="infographic.html">인포그래픽</a></li>
+                        <li style="width: 120px;"><a href="databoard.html">데이터 자료실</a></li>
+                        <li style="width: 120px;"><a href="prediction.html">예측 자료실</a></li>
                     </ul>
                 </li>
-                <li><a href="">알림마당</a>
+                <li><a href="notification.html">알림마당</a>
                     <ul class="sub_menu">
-                        <li><a href="#">공지사항</a></li>
-                        <li><a href="#">문의게시판</a></li>
-                        <li><a href="#">이벤트</a></li>
+                        <li><a href="notification.html">공지/문의</a></li>
+                        <li><a href="event.html">이벤트</a></li>
                     </ul>
                 </li>
-                <li><a href="">소개</a>
+                <li><a href="introduce.html">소개</a>
                     <ul class="sub_menu">
-                        <li><a href="#">이용안내</a></li>
+                        <li><a href="introduce.html">이용안내</a></li>
                     </ul>
                 </li>
             </ul>
@@ -57,32 +58,98 @@
 <body>
     <div class="body">
         <!--페이지별 내용-->
-        <h2>회원가입</h2>
+        <h2 style="text-align: center; margin-bottom:50px ;">KEUS 회원가입</h2>
         <div class="join-wrap">
             <form method="post" action="{% url 'join' %}" id="join-form" >
                 {% csrf_token %}
-                <a>아이디 입력
-                    <input type="text" name="username" placeholder="아이디를 입력해주세요">
-                </a>
-                <a>비밀번호 입력
-                    <input type="password" name="password" placeholder="비밀번호를 입력하세요">
-                </a>
-                <a>비밀번호 확인
-                    <input type="password" name="PasswordOK" placeholder="비밀번호를 다시한번 입력해 주세요">
-                     {% if form.errors.PasswordOK %}
-                        <p style="color: red;">{{ form.errors.PasswordOK.0 }}</p>
-                    <!--css파일에서 글자크기수정 필요! 그리고 하나의 오류메세지를 처리하는 경우 OK 뒤에 INDEX 0 사용-->
-                    {% endif %}
-                </a>
-                <a>연락처
-                    <input type="text" name="Tell" placeholder="전화번호를 입력하세요">
-                </a>
-                <a>이메일
-                    <input type="text" name="email" placeholder="이메일을 입력하세요">
-                </a>
-
-            <input type="submit" id="login-btn" value="회원가입">
-            <input type="submit" id="login-btn" value="취소">
+                <div class="input-info">
+                    <div class="item">
+                       <ul>
+                            <li>
+                                <div class="item_input">
+                                        <span>아이디</span>
+                                        <input type="text" name="username" id="id" placeholder="4~20자리 / 영문, 숫자, 특수문자 '_'사용가능">
+                                        <button type="button" id="idcheck" onclick="ID_check()">중복확인</button>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="item_input">
+                                    <span>비밀번호</span>
+                                    <input type="password" name="password" id="pw" placeholder="8~20자리 / 영문, 숫자, 특수문자 사용">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="item_input">
+                                    <span>비밀번호 확인</span>
+                                    <input type="password" name="PasswordOK" id="pwok"  placeholder="비밀번호 확인">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="item_input">
+                                    <span>이메일</span>
+                                    <input type="text" name="email" id="email"  placeholder="example@keus.co.kr">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="item_input">
+                                    <span>연락처</span>
+                                    <input type="text" name="Tell" id="phone"  placeholder="'-'제외하고 입력해주세요">
+                                </div>
+                            </li>
+                       </ul>
+                    </div>
+                    <span class="terms_agree"><strong>약관</strong></span>
+                    <div class="guidance">
+                        <div class="agree_box">
+                            <ul>
+                                <li>
+                                    <div class="InpBox">
+                                        <span>
+                                            <input type="checkbox" id="agree_all" onclick='selectAll(this)'>
+                                            <label for="agree_all">
+                                                <strong class="all_agree">전체 동의</strong>
+                                            </label>
+                                            <input type="hidden">
+                                        </span>
+                                    </div>
+                                </li>
+                            </ul>
+                            <ul class="agree_article depth2">
+                                <li>
+                                    <div class="agree_desc">
+                                        <span >
+                                            <input type="checkbox" id="agree_1" name="check">
+                                            <label for="agree_1">
+                                                <span>개인회원 약관에 동의</span>
+                                            </label>
+                                        </span>
+                                    </div>
+                                    <a href="https://www.narastat.kr/gps/contents/guidance/agreementPopup.do" 
+                                    target="_blank" onclick="window.open(this.href, '_blank', 'width=730,height=820'); return false;">
+                                    </a>
+                                </li>
+                                <li>
+                                    <div class="agree_desc">
+                                        <span>
+                                            <input type="checkbox" id="agree_2" name="check">
+                                            <label for="agree_2">
+                                               <span>개인정보 수집 및 이용에 동의</span>
+                                            </label>
+                                        </span>
+                                    </div>
+                                    <a id="popupClausePrivacyPerson"
+                                    href="https://www.narastat.kr/gps/contents/guidance/agreementPopup.do"
+                                    target="_blank" onclick="window.open(this.href, '_blank', 'width=730,height=820'); return false;">
+                                        <span class="guide_info">상세보기</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="join-box">
+                    <input type="submit" id="signup-btn" value="회원가입" onclick="validate()">
+                </div>
             </form>
         </div>
     </div>

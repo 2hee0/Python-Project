@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko">
+{% load static %}
+<head>
+    <!--CSS연결-->
+    <link rel="stylesheet" href="{% static 'member/css/KEUS.CSS' %}">
+    <!--JS연결-->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="{% static 'member/js/FIND.JS' %}"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<div class="header">
+    <div class="header_box">
+        <div class="btn_box">
+            <button onclick="location.href='{% url 'login' %}'" id="login">로그인</button>
+            <button onclick="location.href='{% url 'join' %}'" id="join">회원가입</button>
+        </div>
+    </div>
+    <div class="container">
+        <h1>회사 홈페이지 헤더 메뉴</h1>
+        <a href="{% url 'header' %}">
+            <img src="{% static 'member/img/logo.png' %}" title="로고">
+        </a>
+        <nav>
+            <ul class="main_menu">
+                <li><a href="region.html">통계 서비스</a>
+                    <ul class="sub_menu" >
+                        <li><a href="region.html">지역별</a></li>
+                        <li><a href="date.html">날짜별</a></li>
+                    </ul>
+                </li>
+                <li><a href="infographic.html">데이터 자료실</a>
+                    <ul class="sub_menu" >
+                        <li style="width: 120px;"><a href="infographic.html">인포그래픽</a></li>
+                        <li style="width: 120px;"><a href="databoard.html">데이터 자료실</a></li>
+                        <li style="width: 120px;"><a href="prediction.html">예측 자료실</a></li>
+                    </ul>
+                </li>
+                <li><a href="notification.html">알림마당</a>
+                    <ul class="sub_menu">
+                        <li><a href="notification.html">공지/문의</a></li>
+                        <li><a href="event.html">이벤트</a></li>
+                    </ul>
+                </li>
+                <li><a href="introduce.html">소개</a>
+                    <ul class="sub_menu">
+                        <li><a href="introduce.html">이용안내</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+<!-----------------------------여기서부터--------------------------------->
+<body>
+    <div class="body">
+        <!--페이지별 내용-->
+        <h1>아이디/비밀번호 찾기</h1>
+        <p>회원님이 기존에 가입 시 입력한 회원정보를 통해 가입하신 아이디와 비밀번호를 조회하실 수 있습니다.</p>
+        <hr/>
+        <div class="find-wrap">
+            <div class="find-item">
+                <form method="get" action="{% url 'find' %}" class="find-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="type" value="username"> <!--find_type(아이디찾기/비밀번호찾기)구분을 위한 hidden code-->
+                    <h2>아이디 찾기</h2>
+                    <ul>
+                        <li>
+                            <div class="item_input">
+                                <span>이메일</span>
+                                <input type="text" id="email" name="email" placeholder="이메일을 입력해주세요">
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item_input">
+                                <span>연락처</span>
+                                <input type="text" id="phone" name="Tell" placeholder="'-'를 제외하고 입력해주세요">
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="find-box">
+                        <input type="submit" id="signup-btn" value="아이디 찾기">
+                    </div>
+                </form>
+                <div class="mid-wall"></div>
+                <form method="get" action="{% url 'find' %}" class="find-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="type" value="password">
+                    <h2>비밀번호 찾기</h2>
+                    <ul>
+                        <li>
+                            <div class="item_input">
+                                <span>아이디</span>
+                                <input type="text" id="id" name="username" placeholder="아이디를 입력해주세요">
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item_input">
+                                <span>이메일</span>
+                                <input type="text" id="email" name="email" placeholder="이메일을 입력해주세요">
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item_input">
+                                <span>연락처</span>
+                                <input type="text" id="phone" name="Tell" placeholder="'-'를 제외하고 입력해주세요">
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="find-box">
+                        <input type="submit" id="signup-btn" value="비밀번호 찾기">
+                    </div>
+                </form>
+             </div>
+        </div>
+    </div>
+</body>
+<!-----------------------------여기까지--------------------------------->
+<footer>
+    <div class="footer">
+        <div id="footer_box">
+            <a href="https://kostat.go.kr/ansk/">
+                <img  src="{% static 'member/img/tong.png' %}" style="cursor: pointer;">
+            </a>
+            <a href="https://kiccampus.com/kr/index.php">
+                <img  src="{% static 'member/img/KIC.png' %}" style="cursor: pointer;">
+            </a>
+            <p>KEUS 서울시 전기 사용량 통계 사이트</p>
+            <p>Copyright 2023.KEUS All Rights Reserved.㉿</p>
+        </div>
+    </div>
+</footer>
+</html>
