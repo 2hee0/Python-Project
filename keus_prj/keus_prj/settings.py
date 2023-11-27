@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'main',
     # 'master',
     'member',
-    # 'board',
+    'board',
     # 'mypage',
 ]
 

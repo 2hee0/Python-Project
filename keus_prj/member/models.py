@@ -78,7 +78,9 @@ class Board(models.Model):
     Review = models.TextField(max_length=2000, default='값을 넣어주세요')
     # category에 외래키 걸기
     category = models.ForeignKey(Category, null=True, on_delete=models.SET_NULL, blank=True)
-    
+
+    def get_absolute_url(self):
+        return f'/board/{self.pk}'
 # class Board_Review(models.Model):
 #     # Member  fk설정
 #     member = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+    글 쓰는 게시판
+    <form method="post" id="comment-form">
+        {% csrf_token %}
+        {{ boards }}
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
