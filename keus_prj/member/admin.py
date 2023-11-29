@@ -1,10 +1,11 @@
 from django.contrib import admin
 
 from django.db import models
-from .models import Board, Member, Category
+from .models import Member
+
+from board.models import Board, Category
 # Register your models here.
 
-admin.site.register(Board)
 admin.site.register(Member)
 
 class CategoryAdmin(admin.ModelAdmin):

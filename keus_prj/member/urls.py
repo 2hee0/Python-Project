@@ -2,11 +2,13 @@ from django.urls import path
 from . import views
 from .views import join
 
+app_name = 'member'  # 네임스페이스 추가
+
 urlpatterns=[
-    # localhost:8000/blog 매핑
     path('join/',views.join, name='join'),
     path('login/', views.login, name='login'),
-    path('header/', views.header, name='header'),
     path('find/', views.find, name='find'),
     path('check_username/', views.check_username, name='check_username'),
+    path('logout/', views.logout, name='logout'),
+    path('mypage/', views.mypage, name='mypage'),
 ]

@@ -1,27 +1,29 @@
+from django.contrib.auth import login as auth_login, logout as auth_logout, authenticate
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.contrib import messages
 
 from .models import Member
-from .forms import MemberForm
+from .forms import MemberForm, UpdateProfileForm
+
 
 def join(request):
     if request.method == 'POST':
         form = MemberForm(request.POST)
         if form.is_valid():
             member_data = form.cleaned_data
-            # 비밀번호 확인 부분
             if member_data['password'] == member_data['PasswordOK']:
-                Member.objects.create(
+                user = Member.objects.create_user(
                     username=member_data['username'],
                     password=member_data['password'],
                     Tell=member_data['Tell'],
                     email=member_data['email']
                 )
-                return redirect(reverse('login'))  # 가입 성공 페이지(reverse 함수사용 -> member/login 으로 이동)
+                return redirect(reverse('member:login'))
             else:
-                # 비밀번호가 일치하지 않을 경우 에러 메시지 추가
                 form.add_error('PasswordOK', '비밀번호가 일치하지 않습니다.')
     else:
         form = MemberForm()
@@ -33,21 +35,22 @@ def login(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
 
-        members = Member.objects.filter(username=username, password=password)
-        if members.exists():
-            # 로그인 처리
-            member = members.first()  # 검색된 회원중 첫번째 회원을 가져옴
-            request.session['username'] = member.username
-            return redirect(reverse('header'))
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            auth_login(request, user)
+            return redirect(reverse('main:main'))
         else:
-            # 로그인 실패
             return render(request, 'member/login.html', {'error_message': '아이디 또는 비밀번호를 잘못 입력했습니다.'})
-
     return render(request, 'member/login.html')
 
 # 로그인 성공시 메인페이지로 이동(지금은 임시로 member/header.html 로 )
 def header(request):
     return render(request, 'member/header.html')
+
+@login_required  # 로그인이 필수적으로 요구되는 사항(logout,mypage)
+def logout(request):
+    auth_logout(request)
+    return redirect(reverse('member:login'))
 
 # 아이디 및 비밀번호 찾기를 위한 find 함수 생성
 def find(request):
@@ -78,6 +81,7 @@ def find(request):
 
         return render(request, 'member/find.html')
 
+# 회원가입 시 아이디 중복확인(DB비교)
 def check_username(request):
     if request.method == 'POST':
         username = request.POST.get('username', '')
@@ -90,3 +94,42 @@ def check_username(request):
             return JsonResponse({'message': '사용 가능한 아이디입니다.', 'status': 'success'})
 
     return JsonResponse({'message': '잘못된 요청입니다.', 'status': 'error'})
+
+#mypage
+@login_required
+def mypage(request):
+    success_message = None
+    error_message = None
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        if action == 'update_profile':
+            update_form = UpdateProfileForm(request.POST)
+            if update_form.is_valid():
+                email = update_form.cleaned_data['email']
+                Tell = update_form.cleaned_data['Tell']
+                new_password = update_form.cleaned_data['new_password']
+                confirm_password = update_form.cleaned_data['confirm_password']
+
+                if new_password == confirm_password:
+                    # 회원정보 수정
+                    request.user.email = email
+                    request.user.Tell = Tell
+                    if new_password:
+                        request.user.set_password(new_password)     # 새로운 비밀번호 업데이트
+                    request.user.save()
+                    success_message = '회원 정보가 성공적으로 수정되었습니다.'
+                else:
+                    error_message = '새 비밀번호와 비밀번호 확인이 일치하지 않습니다.'
+            else:
+                error_message = '양식이 유효하지 않습니다.'
+        elif action == 'withdraw':
+            # 회원 탈퇴
+            request.user.delete()           # 등록된 사용자 삭제
+            success_message = '회원 탈퇴가 완료되었습니다.'
+            return redirect(reverse('member:login'))
+    else:   # initial : 폼 생성 초기데이터 지정(이메일,연락처는 기본적으로 input 박스에 제공)
+        update_form = UpdateProfileForm(initial={'email': request.user.email, 'Tell': request.user.Tell})
+
+    return render(request, 'member/mypage.html', {'update_form': update_form, 'success_message': success_message, 'error_message': error_message})
