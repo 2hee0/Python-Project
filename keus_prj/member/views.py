@@ -186,3 +186,4 @@ def generate_temp_password():
     # 해당 문자열을 해시로 변환
     hashed_temp_password = make_password(temp_password)
     return temp_password, hashed_temp_password
+#커밋테스트용 주석
