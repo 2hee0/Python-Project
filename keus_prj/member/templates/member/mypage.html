@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+{% load static %}
+<head>
+    <!--CSS연결-->
+    <link href="{% static 'main/css/keus.css' %}" rel="stylesheet" type="text/css">
+    <!--JS연결-->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="{% static 'main/js/keus.js' %}" defer></script>
+    <script src="{% static 'member/js/find.js' %}"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KEUS My Page</title>
+</head>
+<body>
+
+    {% include 'main/header.html' %}
+
+
+<!---------------------------마이페이지 임시바디------------------------------------->
+<body>
+    <div class="body">
+        <h1>마이페이지</h1>
+        <p>회원님의 정보를 수정하거나 탈퇴할 수 있는 페이지입니다.</p>
+        <hr/>
+        <div class="mypage-wrap">
+            <div class="update-info">
+                <h2>회원정보 수정</h2>
+                <form method="post" action="{% url 'member:mypage' %}" class="update-form">
+                    {% csrf_token %}
+                    {% if success_message %}
+                        <div class="success-message">{{ success_message }}</div>
+                    {% elif error_message %}
+                        <div class="error-message">{{ error_message }}</div>
+                    {% endif %}
+                    {{ update_form.as_p }}
+                    <input type="hidden" name="action" value="update_profile">
+                    <div class="update-box">
+                        <input type="submit" id="update-btn" value="정보 수정">
+                    </div>
+                </form>
+            </div>
+
+            <div class="withdrawal">
+                <h2>회원 탈퇴</h2>
+                <form method="post" action="{% url 'member:mypage' %}" class="withdrawal-form">
+                    {% csrf_token %}
+                    <p>회원 탈퇴 시 모든 정보가 삭제됩니다. 정말로 탈퇴하시겠습니까?</p>
+                    <input type="hidden" name="action" value="withdraw">
+                    <div class="withdrawal-box">
+                        <input type="submit" id="withdrawal-btn" value="회원 탈퇴">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% include 'main/footer.html' %}
+
+</body>
+</html>

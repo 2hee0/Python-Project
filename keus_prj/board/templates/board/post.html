@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+{% load static %}
+<head>
+    <!-- CSS 연결 -->
+    <link href="{% static 'main/css/keus.css' %}" rel="stylesheet" type="text/css">
+    <!-- JS 연결 -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="{% static 'main/js/keus.js' %}" defer></script>
+    <script src="{% static 'board/js/board.js' %}" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KEUS 공지/문의 게시판</title>
+</head>
+<body>
+
+    {% include 'main/header.html' %}
+
+    <div class="back-img"></div>
+    <div class="body">
+        <!-- 페이지별 내용 -->
+        <section class="notice">
+            <!-- 좌측 메뉴 -->
+            <div class="left-menu">
+                <h2>알림마당</h2>
+                <hr style="width: 200px; float: left;">
+                <ul>
+                    <li><a href="">공지/문의</a></li>
+                    <li><a href="">이벤트</a></li>
+                </ul>
+            </div>
+            <!-- 게시판 리스트 -->
+            <div class="noti">
+                <h2>공지/문의</h2>
+                <div>
+                    <button class="write-btn">
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'post_write' %}">글쓰기</a>
+                            <p>환영합니다! 여기서 자료 요청, 관리자 권한 신청 등을 할 수 있습니다.</p>
+                        {% else %}
+                            <a href="{% url 'member:login' %}">글쓰기</a>
+                        {% endif %}
+                    </button>
+                </div>
+                <div class="board-list">
+                    <ul class="subject">
+                        <li id="bnum">번호</li>
+                        <li id="btitle" style="text-align: center;">제목</li>
+                        <li id="bid">작성자</li>
+                        <li id="bdate">작성일</li>
+                    </ul>
+                    {% for board in boards %}
+                        <ul onclick="toggleContent(this)">
+                            <li id="bnum">{{ forloop.counter }}</li>
+                            <li id="btitle">{{ board.title }}</li>
+                            <li id="bid">{{ board.member.username }}</li>
+                            <li id="bdate">{{ board.created_at }}</li>
+                        </ul>
+                        <div class="content">
+                            <p>
+                                {{ board.contents }}
+                            </p>
+                            <!-- CSRF 토큰 추가 -->
+                            <form id="deleteForm" method="POST" action="{% url 'delete_post' pk=board.id %}">
+                                {% csrf_token %}
+                                <button type="button" onclick="confirmDelete('{{ board.id }}')">삭제</button>
+                            </form>
+                            {% if user.is_authenticated %}
+                                <form method="post" action="{{post.get_absolute_url}}new_comment/" class="comment">
+                                    {% csrf_token %}
+                                    <hr>
+                                    <span>┗</span>
+                                    <textarea></textarea>
+                                    <button type="submit" id="comment-btn"><a>작성 완료</a></button>
+                                </form>
+                            {% else %}
+                                <a role="button" type="button">
+                                    관리자 계정으로 로그인 후 사용해주세요.
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    </div>
+
+    {% include 'main/footer.html' %}
+
+</body>
+</html>

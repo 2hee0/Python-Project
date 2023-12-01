@@ -6,3 +6,11 @@ class MemberForm(forms.Form):
     PasswordOK = forms.CharField(max_length=128,required=True)
     Tell = forms.CharField(max_length=20, required=True)
     email = forms.EmailField(max_length=254,required=True)
+
+# mypage 회원정보 수정(업데이트)을 위한 UpdateForm 설정
+class UpdateProfileForm(forms.Form):
+    email = forms.EmailField(max_length=254, required=True)
+    Tell = forms.CharField(max_length=20, required=True)
+    new_password = forms.CharField(max_length=128, required=True)
+    confirm_password = forms.CharField(max_length=128, required=True)
+

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+{% load static %}
+<head>
+    <!--CSS연결-->
+    <link href="{% static 'main/css/keus.css' %}" rel="stylesheet" type="text/css">
+    <!--JS연결-->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="{% static 'main/js/keus.js' %}" defer></script>
+    <script src="{% static 'member/js/find.js' %}"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KEUS 회원가입</title>
+</head>
+<body>
+
+    {% include 'main/header.html' %}
+
+    <div class="body">
+        <!--페이지별 내용-->
+        <h1>아이디/비밀번호 찾기</h1>
+        <p>회원님이 기존에 가입 시 입력한 회원정보를 통해 가입하신 아이디와 비밀번호를 조회하실 수 있습니다.</p>
+        <hr/>
+        <div class="find-wrap">
+            <div class="find-item">
+                <form method="get" action="{% url 'member:find' %}" class="find-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="type" value="username"> <!--find_type(아이디찾기/비밀번호찾기)구분을 위한 hidden code-->
+                    <h2>아이디 찾기</h2>
+                    <ul>
+                        <li>
+                            <div class="item_input">
+                                <span>이메일</span>
+                                <input type="text" id="email" name="email" placeholder="이메일을 입력해주세요">
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item_input">
+                                <span>연락처</span>
+                                <input type="text" id="phone" name="Tell" placeholder="'-'를 제외하고 입력해주세요">
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="find-box">
+                        <input type="submit" id="signup-btn" value="아이디 찾기">
+                    </div>
+                </form>
+                <div class="mid-wall"></div>
+                <form method="get" action="{% url 'member:find' %}" class="find-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="type" value="password">
+                    <h2>비밀번호 찾기</h2>
+                    <ul>
+                        <li>
+                            <div class="item_input">
+                                <span>아이디</span>
+                                <input type="text" id="id" name="username" placeholder="아이디를 입력해주세요">
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item_input">
+                                <span>이메일</span>
+                                <input type="text" id="email" name="email" placeholder="이메일을 입력해주세요">
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item_input">
+                                <span>연락처</span>
+                                <input type="text" id="phone" name="Tell" placeholder="'-'를 제외하고 입력해주세요">
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="find-box">
+                        <input type="submit" id="signup-btn" value="비밀번호 찾기">
+                    </div>
+                </form>
+             </div>
+        </div>
+    </div>
+
+    {% include 'main/footer.html' %}
+
+</body>
+</html>

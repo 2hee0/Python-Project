@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko">
+{% load static %}
+<head>
+    <!--CSS연결-->
+    <link href="{% static 'main/css/keus.css' %}" rel="stylesheet" type="text/css">
+    <!--JS연결-->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="{% static 'main/js/keus.js' %}" defer></script>
+    <script src="{% static 'board/js/board.js' %}" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KEUS 공지/문의 게시글 작성</title>
+</head>
+
+<body>
+
+    {% include 'main/header.html' %}
+
+    <div class="body">
+        <!--페이지별 내용-->
+        <section class="notice">
+            <!--좌측 메뉴-->
+            <div class="left-menu">
+                <h2>알림마당</h2>
+                <hr style="width: 200px; float: left;">
+                <ul>
+                    <li><a href="notification.html">공지/문의</a></li>
+                    <li><a href="event.html">이벤트</a></li>
+                </ul>
+            </div>
+            <!-- 게시글 작성 -->
+                <div class="noti">
+                    <h2>문의</h2>
+                        <p>말 곱게 쓰세요</p>
+                    <div id="board_write">
+                            <div id="write_area">
+                                <form method="post" action="{% url 'post_write' %}" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <div class="select-box">
+                                        <select>
+                                            <option value="">게시글 형식을 선택해 주세요.</option>
+                                            <option value="quest">문의</option>
+                                            <option value="notice">공지사항</option>
+                                            <option value="ect">기타</option>
+                                        </select>
+                                    </div>
+                                    <div id="in_title">
+                                        <input type="text" name="title" placeholder="제목을 입력하세요.">
+                                    </div>
+                                    <div class="wi_line"></div>
+                                    <div id="in_content">
+                                        <textarea id="ucontent" name="contents" placeholder="내용" required></textarea>
+                                    </div>
+                                    <div class="write">
+                                        <button type="submit">글 작성</button>
+                                        <button><a href="{% url 'board_list' %}">취소</a></button>
+                                    </div>
+                                </form>
+
+                            </div>
+                    </div>
+                </div>
+        </section>
+    </div>
+
+    {% include 'main/footer.html' %}
+
+</body>
+</html>
