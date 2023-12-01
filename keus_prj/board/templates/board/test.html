@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <button id="predict">데이터 예측 시작</button>
+
+    <form id="searchForm">
+        <input type="text" id="region" name="region" required>
+        <button type="button" onclick="search()">검색</button>
+    </form>
+
+    <div id="searchResults">
+        <!-- 검색 결과가 여기에 나타납니다. -->
+    </div>
+</body>
+<script>
+    document.getElementById('predict').addEventListener('click', function() {
+        // 예측 시작 시 팝업 표시
+        alert('데이터 예측을 시작합니다. 확인버튼을 눌러주세요');
+
+        // 서버로 비동기 요청 보내기
+        fetch('predict/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            // 작업이 완료되면 완료 메시지 표시
+            alert(data.message);
+        });
+    });
+
+    document.getElementById('region').addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();  // 기본 동작(폼 제출) 막기
+        search();
+    }
+});
+
+    function search() {
+        var region = document.getElementById('region').value;
+        alert('검색 시작');
+        // Ajax 요청
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/board/search/?region=' + region, true);
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+
+        // 응답 결과
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                var response = JSON.parse(xhr.responseText);
+                if (response.status === 'success') {
+                    // 결과 노출 함수로 넘어감니다
+                    displayResults(response.predicted_data);
+                } else {
+                    alert(response.message);
+                }
+            }
+        };
+
+        xhr.send();
+    }
+
+    // 결과 노출 함수
+    function displayResults(predictedData) {
+        var tableHtml = '<table border="1">';
+
+        // 테이블 헤더
+        tableHtml += '<thead><tr>';
+        tableHtml += '<th>년월</th>';
+        tableHtml += '<th>평균온도</th>';
+        tableHtml += '<th>평균 최고 온도</th>';
+        tableHtml += '<th>평균 최소 온도</th>';
+        tableHtml += '</tr></thead>';
+
+        // 테이블 본문
+        tableHtml += '<tbody>';
+        for (var i = 0; i < predictedData.length; i++) {
+            tableHtml += '<tr>';
+            tableHtml += '<td>' + predictedData[i].date + '</td>';
+            tableHtml += '<td>' + predictedData[i].avg_temp + '</td>';
+            tableHtml += '<td>' + predictedData[i].avg_max_temp + '</td>';
+            tableHtml += '<td>' + predictedData[i].avg_min_temp + '</td>';
+            tableHtml += '</tr>';
+        }
+        tableHtml += '</tbody></table>';
+
+        document.getElementById('searchResults').innerHTML = tableHtml;
+    }
+</script>
+</html>

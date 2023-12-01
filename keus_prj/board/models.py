@@ -52,15 +52,6 @@ class Board(models.Model):
 
     def get_absolute_url(self):
         return f'/board/{self.pk}'
-# class Board_Review(models.Model):
-#     # Member  fk설정
-#     member = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-#     # Board fk설정
-#     board = models.ForeignKey(Board, on_delete=models.CASCADE)
-#     # 리뷰 작성란
-#     Re_Contents = models.TextField(max_length=2000, default='값을 넣어주세요')
-#     # 작성일자
-#     created_at = models.DateTimeField(auto_now_add=True)
 
 class Comment(models.Model):
     member = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -73,3 +64,48 @@ class Comment(models.Model):
 
     def get_absolute_url(self):
         return f'{self.post.get_absolute_url()}#comment-{self.pk}'
+
+class predictData_storage(models.Model):
+    # 파일 저장 경로
+    csv_path = models.CharField(max_length=255)
+    # log data
+    created_at = models.DateTimeField(auto_now_add=True)
+
+class predictData(models.Model):
+    # predictData_storage  fk설정
+    storage_id = models.ForeignKey(predictData_storage, null=True, on_delete=models.SET_NULL)
+    # 지점
+    code = models.IntegerField()
+    # 시군구
+    region = models.CharField(max_length=255)
+    # 년월
+    date = models.DateField()
+    # 평균 온도
+    avg_temp = models.FloatField()
+    # 평균 최고 온도
+    avg_max_temp = models.FloatField()
+    # 평균 최소 온도
+    avg_min_temp = models.FloatField()
+    # 예측 평균 온도
+    pre_avg_temp = models.FloatField()
+    # 예측 평균 최고 온도
+    pre_avg_max_temp = models.FloatField()
+    # 예측 평균 최소 온도
+    pre_avg_min_temp = models.FloatField()
+
+    def __str__(self):
+        return f"{self.date} - {self.region} - {self.avg_temp}"
+
+class predict_future_Data(models.Model):
+    # 지점
+    code = models.IntegerField()
+    # 시군구
+    region = models.CharField(max_length=255)
+    # 년월
+    date = models.DateField()
+    # 예측 평균 온도
+    pre_avg_temp = models.FloatField()
+    # 예측 평균 최고 온도
+    pre_avg_max_temp = models.FloatField()
+    # 예측 평균 최소 온도
+    pre_avg_min_temp = models.FloatField()
