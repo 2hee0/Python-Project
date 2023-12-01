@@ -14,36 +14,13 @@ class MemberStatus(Enum):
     # 탈퇴 상태
     INACTIVE = 'inactive'
 
-class BoardStatus(Enum):
-    # 일반글
-    NORMAL = 'normal'
-    # 문의글
-    INQUIRY = 'inquiry'
-    # 공지글
-    ANNOUNCEMENT = 'announcement'
-
-# 카테고리 테이블
-class Category(models.Model):
-    name = models.CharField(max_length=50, unique=True)
-    slug = models.SlugField(max_length=200,
-                            unique=True, allow_unicode=True)
-    #  allow_unicode=True : 한글을 포함한 모든 유니코드 문자를 지원
-
-    def __str__(self):
-        return self.name
-
-    def get_absolute_url(self):
-        return f'/blog/category/{self.slug}'
-
-    class Meta:
-        verbose_name_plural = 'Categories'
-
 # main_member 테이블 작성
 class Member(AbstractUser):
     # 주소, 현재 빼둠
     # Address = models.CharField(max_length=1000)
     # 전화번호
-    Tell = models.CharField(max_length=200)         
+    Tell = models.CharField(max_length=200, unique=True)
+    email = models.EmailField(max_length=255,unique=True)
     # 멤버 관련 이넘
     Member_Status = models.CharField(
         max_length=20,
@@ -51,6 +28,7 @@ class Member(AbstractUser):
         default=MemberStatus.ACTIVE.value
     )
     # 수정일자
+<<<<<<< HEAD
     updated_at = models.DateTimeField(auto_now=True)         
 
 
@@ -90,3 +68,6 @@ class Board(models.Model):
 #     Re_Contents = models.TextField(max_length=2000, default='값을 넣어주세요')
 #     # 작성일자
 #     created_at = models.DateTimeField(auto_now_add=True)
+=======
+    updated_at = models.DateTimeField(auto_now=True)
+>>>>>>> 5300eb95c0d7ea7cc17b9ef5baf1824939fa8c83

@@ -3,57 +3,18 @@
 {% load static %}
 <head>
     <!--CSS연결-->
-    <link rel="stylesheet" href="{% static 'member/css/KEUS.CSS' %}">
+    <link href="{% static 'main/css/keus.css' %}" rel="stylesheet" type="text/css">
     <!--JS연결-->
-    <script src="{% static 'member/js/KEUS.JS' %}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="{% static 'main/js/keus.js' %}" defer></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>KEUS 로그인</title>
 </head>
-<div class="header">
-    <div class="header_box">
-        <div class="btn_box">
-            <button onclick="location.href='{% url 'login' %}'" id="login">로그인</button>
-            <button onclick="location.href='{% url 'join' %}'" id="join">회원가입</button>
-        </div>
-    </div>
-    <div class="container">
-        <h1>회사 홈페이지 헤더 메뉴</h1>
-        <a href="{% url 'header' %}">
-            <img src="{% static 'member/img/logo.png' %}" title="로고">
-        </a>
-        <nav>
-            <ul class="main_menu">
-                <li><a href="region.html">통계 서비스</a>
-                    <ul class="sub_menu" >
-                        <li><a href="region.html">지역별</a></li>
-                        <li><a href="date.html">날짜별</a></li>
-                    </ul>
-                </li>
-                <li><a href="infographic.html">데이터 자료실</a>
-                    <ul class="sub_menu" >
-                        <li style="width: 120px;"><a href="infographic.html">인포그래픽</a></li>
-                        <li style="width: 120px;"><a href="databoard.html">데이터 자료실</a></li>
-                        <li style="width: 120px;"><a href="prediction.html">예측 자료실</a></li>
-                    </ul>
-                </li>
-                <li><a href="notification.html">알림마당</a>
-                    <ul class="sub_menu">
-                        <li><a href="notification.html">공지/문의</a></li>
-                        <li><a href="event.html">이벤트</a></li>
-                    </ul>
-                </li>
-                <li><a href="introduce.html">소개</a>
-                    <ul class="sub_menu">
-                        <li><a href="introduce.html">이용안내</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </nav>
-    </div>
-</div>
-<!-----------------------------여기서부터--------------------------------->
 <body>
+
+    {% include 'main/header.html' %}
+
     <div class="body">
         <!--페이지별 내용-->
         <div class="login-wrap">
@@ -61,7 +22,7 @@
             {% if error_message %}
             <p style="color: red;">{{ error_message }}</p>
             {% endif %}
-            <form method="post" action="{% url 'login' %}" id="login-form" >
+            <form method="post" action="{% url 'member:login' %}" id="login-form" >
                 {% csrf_token %}
                 <span>아이디</span>
                 <input type="text" name="username" placeholder="ID">
@@ -73,28 +34,16 @@
         <div class="join-link">
             <p>
                 <span>아이디나 비밀번호를 잊으셨나요?</span>
-                <span><a href="{% url 'find' %}">아이디/비밀번호 찾기</a></span>
+                <span><a href="{% url 'member:find' %}">아이디/비밀번호 찾기</a></span>
             </p>
             <p>
                 <span>로그인 아이디가 없으신가요?</span>
-                <span><a href="{% url 'join' %}">회원가입</a></span>
+                <span><a href="{% url 'member:join' %}">회원가입</a></span>
             </p>
         </div>
     </div>
+
+    {% include 'main/footer.html' %}
+
 </body>
-<!-----------------------------여기까지--------------------------------->
-<footer>
-    <div class="footer">
-        <div id="footer_box">
-            <a href="https://kostat.go.kr/ansk/">
-               <img  src="{% static 'member/img/tong.png' %}" style="cursor: pointer;">
-            </a>
-            <a href="https://kiccampus.com/kr/index.php">
-                <img  src="{% static 'member/img/KIC.png' %}" style="cursor: pointer;">
-            </a>
-            <p>KEUS 서울시 전기 사용량 통계 사이트</p>
-            <p>Copyright 2023.KEUS All Rights Reserved.㉿</p>
-        </div>
-    </div>
-</footer>
 </html>

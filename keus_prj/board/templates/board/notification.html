@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko">
+    
+<head>
+    <!--CSS연결-->
+    <link rel="stylesheet" href="css/KEUS.CSS">
+    <!--JS연결-->
+    <script src="js/KEUS.JS"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<div class="header">
+    <div class="header_box">
+        <div class="btn_box">
+            <button onclick="location.href='login.html'" id="login">로그인</p>
+            <button onclick="location.href='join.html'" id="join">회원가입</p>
+        </div>
+    </div>
+    <div class="container">
+        <h1>회사 홈페이지 헤더 메뉴</h1>
+        <a href="header.html">
+            <img src="img/logo.png" title="로고">
+        </a>
+        <nav>
+            <ul class="main_menu">
+                <li><a href="region.html">통계 서비스</a></li>
+                <li><a href="databoard.html">데이터 자료실</a></li>
+                <li><a href="notification.html">알림마당</a></li>
+                <li><a href="introduce.html">소개</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+<!-----------------------------여기서부터--------------------------------->
+<body>
+    <div class="body">
+        <!--페이지별 내용-->
+        <section class="notice">
+            <!--좌측 메뉴-->
+            <div class="left-menu">
+                <h2>알림마당</h2>
+                <hr style="width: 200px; float: left;">
+                <ul>
+                    <li><a href="notification.html">공지/문의</a></li>
+                    <li><a href="event.html">이벤트</a></li>
+                </ul>
+            </div>
+            <!-- 게시판 리스트 -->
+            <div class="noti">
+                <h2>공지/문의</h2>
+                <div>
+                    <button class="write-btn"><a href="boardwrite.html">글쓰기</a></button>
+                    <p>환영합니다! 여기서 자료 요청, 관리자 권한 신청 등을 할 수 있습니다.</p>
+                </div>
+                <div class="board-list">
+                    <ul class="subject">
+                        <li id="bnum">번호</li>
+                        <li id="btitle" style="text-align: center;">제목</li>
+                        <li id="bid">작성자</li>
+                        <li id="bdate">작성일</li>
+                    </ul>
+                    <ul onclick="toggleContent(this)">
+                        <li id="bnum">3</li>
+                        <li id="btitle">[공지사항] 개인정보 이용내역 안내</li>
+                        <li id="bid">관리자</li>
+                        <li id="bdate">2023-11-24</li>
+                    </ul>
+                    <div class="content">
+                        <p>
+                            개인정보 이용내역에 대한 안내입니다.
+                        </p>
+                    </div>
+
+                    <ul onclick="toggleContent(this)">
+                        <li id="bnum">2</li>
+                        <li id="btitle">[문의] 데이터 오류 수정 요청합니다<span>답변완료</span></li>
+                        <li id="bid">kdi23***</li>
+                        <li id="bdate">2023-11-24</li>
+                    </ul>
+                    <div class="content">
+                        <p>
+                        데이터에 오류가 있는것 같아요.
+                        </p>
+                        <form class="comment">
+                            <hr>
+                            <span>└</span>
+                            <p>데이터 오류 수정 완료했습니다.</p>
+                        </form>
+                    </div>
+
+                    <!--관리자만 작성 가능-->
+                    <ul onclick="toggleContent(this)">
+                        <li id="bnum">1</li>
+                        <li id="btitle">[문의]22년도 겨울 전력 사용량 데이터에 오류가 있어요</li>
+                        <li id="bid">tsk12**</li>
+                        <li id="bdate">2023-11-24</li>
+                    </ul>
+                    <div class="content">
+                        <p>11월 데이터에 오류가 있으니 수정 부탁드립니다</p>
+                        <form class="comment">
+                            <hr>
+                            <span>┗</span>
+                            <textarea></textarea>
+                            <button type="submit" id="comment-btn">><a>작성완료</a></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+<!-----------------------------여기까지--------------------------------->
+<footer>
+    <div class="footer">
+        <div id="footer_box">
+            <div style="float: left;">
+                <a href="https://kiccampus.com/kr/index.php">
+                    <img  src="img/KIC.png" style="cursor: pointer;">
+                </a>
+                <p>
+                Python Project 3조<br>
+                주제 : 날씨(온도)에 따른 전력 사용량 예측<br>
+                조장 : 김지헌<br>
+                부조장 : 이희영<br>
+                조원 : 김용진, 김현욱, 이동현, 하승우<br>
+                </p>
+            </div>
+            <p id="midbar"></p>
+            <div class="link">
+            <p>관련 사이트로 이동하기</p>
+            <a href="https://www.kma.go.kr/kma/"">
+                <img  src="img/weather.png" style="cursor: pointer;">
+            </a>
+            <a href="https://home.kepco.co.kr/kepco/main.do">
+                <img  src="img/electric.png" style="cursor: pointer;">
+            </a>
+            <a href="https://kostat.go.kr/ansk/">
+                <img  src="img/tong.png" style="cursor: pointer;">
+            </a>
+            <p>KEUS 서울시 전기 사용량 통계 사이트</p>
+            <p>Copyright 2023.KEUS All Rights Reserved.㉿</p>
+            </div>
+        </div>
+    </div>
+</footer>
+</html>

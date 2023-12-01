@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+{% load static %}
+<head>
+    <!-- CSS 연결 -->
+    <link href="{% static 'main/css/keus.css' %}" rel="stylesheet" type="text/css">
+    <!-- JS연결 -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="{% static 'main/js/keus.js' %}" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="header">
+        <div class="header_box">
+            <div class="container">
+                <a href="{% url 'main:main' %}">
+                    <img src="{% static 'main/img/logo.png' %}" title="로고">
+                </a>
+                <nav>
+                    <ul class="main_menu">
+                        <li><a href="region.html">통계 서비스</a></li>
+                        <li><a href="databoard.html">데이터 자료실</a></li>
+                        <li><a href="{% url 'board_list' %}">알림마당</a></li>
+                        <li><a href="introduce.html">소개</a></li>
+                    </ul>
+                </nav>
+
+            </div>
+            <div class="btn_box">
+                {% if user.is_authenticated %}
+                    <form method="post" action="{% url 'member:logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" id="logout">로그아웃</button>
+                    </form>
+                    <button onclick="location.href='{% url 'member:mypage' %}'" id="mypage">마이페이지</button>
+                {% else %}
+                    <button onclick="location.href='{% url 'member:login' %}'" id="login">로그인</button>
+                    <button onclick="location.href='{% url 'member:join' %}'" id="join">회원가입</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
