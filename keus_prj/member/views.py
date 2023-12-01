@@ -1,5 +1,8 @@
+import secrets
+
 from django.contrib.auth import login as auth_login, logout as auth_logout, authenticate
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
@@ -15,7 +18,17 @@ def join(request):
         form = MemberForm(request.POST)
         if form.is_valid():
             member_data = form.cleaned_data
-            if member_data['password'] == member_data['PasswordOK']:
+            # 이메일과 전화번호 중복 확인( 아이디 / 비밀번호 찾기시 중복방지)
+            existing_email = Member.objects.filter(email=member_data['email']).exists()
+            existing_tell = Member.objects.filter(Tell=member_data['Tell']).exists()
+
+            if existing_email:
+                form.add_error('email', '이미 등록된 이메일입니다.')
+
+            if existing_tell:
+                form.add_error('Tell', '이미 등록된 전화번호입니다.')
+
+            if member_data['password'] == member_data['PasswordOK'] and not existing_email and not existing_tell:
                 user = Member.objects.create_user(
                     username=member_data['username'],
                     password=member_data['password'],
@@ -73,11 +86,16 @@ def find(request):
             Tell = request.GET.get('Tell', '')
 
             try:
-                member = Member.objects.get(username=username, email=email, Tell=Tell)
-                return JsonResponse({'password': member.password})
+                # 임시 비밀번호 생성(temporary password)
+                temp_password, hashed_temp_password = generate_temp_password()
 
+                member = Member.objects.get(username=username, email=email, Tell=Tell)
+                member.password = hashed_temp_password
+                member.save()
+
+                return JsonResponse({'temp_password': temp_password})
             except ObjectDoesNotExist:
-                return JsonResponse({'error': '비밀번호를 찾을 수 없습니다.'})
+                return JsonResponse({'error': '임시 비밀번호를 생성할 수 없습니다.'})
 
         return render(request, 'member/find.html')
 
@@ -126,10 +144,45 @@ def mypage(request):
                 error_message = '양식이 유효하지 않습니다.'
         elif action == 'withdraw':
             # 회원 탈퇴
-            request.user.delete()           # 등록된 사용자 삭제
-            success_message = '회원 탈퇴가 완료되었습니다.'
+            request.user.delete()    # 등록된 사용자 삭제
+            success_message = '회원 탈퇴가 완료되었습니다.' #메세지 출력 x 탈퇴시 바로 로그인창으로 이동
             return redirect(reverse('member:login'))
     else:   # initial : 폼 생성 초기데이터 지정(이메일,연락처는 기본적으로 input 박스에 제공)
         update_form = UpdateProfileForm(initial={'email': request.user.email, 'Tell': request.user.Tell})
 
     return render(request, 'member/mypage.html', {'update_form': update_form, 'success_message': success_message, 'error_message': error_message})
+
+# 전화번호와 이메일 비동기 방식 중복체크
+def check_tell(request):
+    if request.method == 'POST':
+        Tell = request.POST.get('Tell', '')
+
+        try:
+            existing_member = Member.objects.get(Tell=Tell)
+            return JsonResponse({'message': '이미 존재하는 전화번호입니다.', 'status': 'error'})
+
+        except Member.DoesNotExist:
+            return JsonResponse({'message': '사용 가능한 전화번호입니다.', 'status': 'success'})
+
+    return JsonResponse({'message': '잘못된 요청입니다.', 'status': 'error'})
+
+def check_email(request):
+    if request.method == 'POST':
+        email = request.POST.get('email', '')
+
+        try:
+            existing_member = Member.objects.get(email=email)
+            return JsonResponse({'message': '이미 존재하는 이메일입니다.', 'status': 'error'})
+
+        except Member.DoesNotExist:
+            return JsonResponse({'message': '사용 가능한 이메일입니다.', 'status': 'success'})
+
+    return JsonResponse({'message': '잘못된 요청입니다.', 'status': 'error'})
+
+# 임시 비밀번호 랜덤생성을 위한 함수 :  secrets 모듈을 사용하여 임시 비밀번호를 생성
+def generate_temp_password():
+    # 랜덤한 8자리 문자열 생성
+    temp_password = secrets.token_hex(4)
+    # 해당 문자열을 해시로 변환
+    hashed_temp_password = make_password(temp_password)
+    return temp_password, hashed_temp_password

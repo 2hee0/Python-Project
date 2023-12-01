@@ -19,7 +19,8 @@ class Member(AbstractUser):
     # 주소, 현재 빼둠
     # Address = models.CharField(max_length=1000)
     # 전화번호
-    Tell = models.CharField(max_length=200)         
+    Tell = models.CharField(max_length=200, unique=True)
+    email = models.EmailField(max_length=255,unique=True)
     # 멤버 관련 이넘
     Member_Status = models.CharField(
         max_length=20,

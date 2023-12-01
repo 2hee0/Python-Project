@@ -1,3 +1,4 @@
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import BoardForm
 from .models import Board, Category
@@ -6,27 +7,11 @@ from django.http import JsonResponse
 from django.db.models import F
 from django.db import transaction
 
-
-# 날씨 관련 api필요 임포트
-import requests
-from datetime import datetime
 
 # Create your views here.
 def index(request):
     boards = Board.objects.values('id', 'title', 'member__username', 'contents', 'created_at')
     return render(request, 'board/post.html', {'boards': boards})
-
-from django.shortcuts import render, redirect, get_object_or_404
-from .forms import BoardForm
-from .models import Board, Category
-from django.views.generic import ListView
-from django.http import JsonResponse
-from django.db.models import F
-from django.db import transaction
-
-# 날씨 관련 api필요 임포트
-import requests
-from datetime import datetime
 
 # Create your views here.
 def index(request):
