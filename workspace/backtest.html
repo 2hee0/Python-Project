@@ -24,7 +24,7 @@
         </a>
         <nav>
             <ul class="main_menu">
-                <li><a href="electric.html">통계 서비스</a></li>
+                <li><a href="weather.html">통계 서비스</a></li>
                 <li><a href="infographic.html">데이터 자료실</a></li>
                 <li><a href="notification.html">알림마당</a></li>
                 <li><a href="introduce.html">소개</a>
@@ -35,22 +35,25 @@
 </div>
 <!-----------------------------여기서부터--------------------------------->
 <body>
+    <div class="back-img"></div>
     <div class="body">
-        <div class="head-img">
-            <img src="img/noti.jpg">
-        </div>
         <!--페이지별 내용-->
         <section class="notice">
-            <div class="sitemap">
-                <a>
-                    <img src="img/home.png"> > 알림마당 > 공지/문의
-                </a>
+            <!--좌측 메뉴-->
+            <div class="left-menu">
+                <h2>알림마당</h2>
+                <hr style="width: 200px; float: left;">
+                <ul>
+                    <li><a href="notification.html">공지/문의</a></li>
+                    <li><a href="event.html">이벤트</a></li>
+                </ul>
             </div>
+            <!-- 게시판 리스트 -->
             <div class="noti">
                 <h2>공지/문의</h2>
                 <div>
                     <button class="write-btn"><a href="boardwrite.html">글쓰기</a></button>
-                    <p style="line-height: 45px;">환영합니다! 여기서 자료 요청, 관리자 권한 신청 등을 할 수 있습니다.</p>
+                    <p>환영합니다! 여기서 자료 요청, 관리자 권한 신청 등을 할 수 있습니다.</p>
                 </div>
                 <div class="board-list">
                     <ul class="subject">
@@ -101,7 +104,7 @@
                             <hr>
                             <span>┗</span>
                             <textarea></textarea>
-                            <button type="submit" id="comment-btn"><a>작성완료</a></button>
+                            <button type="submit" id="comment-btn">><a>작성완료</a></button>
                         </form>
                     </div>
                 </div>

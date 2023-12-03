@@ -15,23 +15,28 @@ a:active {
 }
 
 .container {
-    width: 100%;
+    width: 85%;
     margin: 0 auto;
     height: 80px;
+    position: relative;
+    display: flex;
+    align-items: center;
 }
 
 .header {
+    z-index: 1000;          /* 최상위에 위치될 수 있도록 고정 */
     position: fixed;
     width: 100%;
     top: 0;
     left: 0;
     background-color: #fff;
     border-bottom: solid 1px #cecece;
+    margin-top: 5px;
 }
 
 .header img {
     width: 250px; 
-    padding: 12px 0; 
+    padding: 12px 0;
     cursor: pointer;
 }
 
@@ -41,65 +46,112 @@ a:active {
     justify-content: center;
 }
 
-.header h1 {
-    position: absolute;
-    left: -2000px;
-}
-
-.header nav ul {
+/*메인메뉴*/
+.main_menu {
     display: flex;
     text-align: center;
+    margin-left : 30px;
+}
+.main_menu li:hover .backmenu{
+    height: 80px;
 }
 
-.header nav ul li {
+.main_menu li {
     padding: 0 35px;
-    width: 120px;
     list-style: none;
+    position: relative;
 }
 
-.header nav ul li a {
+.main_menu li:hover .sub_menu{
+    opacity: 1;
+    visibility: visible;
+}
+
+
+.main_menu li a {
     position: relative;
-    display: inline-block;
+    display: block;
     line-height: 80px; 
     font-weight: bold;
     font-size: 20px; 
     text-decoration-line: none;
 }
 
-.header nav ul li.active a,
-.header nav ul li:hover a {
-    color: #0056D6;
+.main_menu li a:hover {
+    border-bottom: 1px solid #0056D6;
 }
 
-.header nav ul li a:after {
-    opacity: 0;
-    content: "";
+
+/*서브메뉴*/
+
+/*.backmenu {
     position: absolute;
+    display: block;
     width: 100%;
-    height: 3px;
-    background-color: #0056D6;
-    left: 0;
+    height: 0;
+    background-color: #555;
+    transition: height 0.3s;
+    z-index: -1;
     bottom: 0;
-    transition: all 0.3s ease-in-out;
 }
 
-.header nav ul li.active a:after,
-.header nav ul li:hover a:after {
-    opacity: 1;
+.sub_menu{
+    position: absolute;
+    background: #fff;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.25s ease-in;
+    list-style: none;
+    padding: 0;
+    top: 120px;
+    text-decoration:none;
+    display: flex;
+    flex-direction: row;
+    margin-top: -30px;
 }
+
+.sub_menu li{
+    height: 40px;
+    width: 120px;
+    padding: 0;
+    right: 45px;
+}
+
+
+.sub_menu li a{
+    font-size: 17px;
+    color: #9b9b9b;
+    height: 17px;
+    line-height: 0px;
+    text-decoration: none;
+    margin-top: 15px;
+}
+
+.sub_menu li a:not(:last-child) {
+    border-right: 1px solid #333;
+    padding-right: 10px;
+}
+
+.sub_menu li a:hover {
+    color: #0056D6;
+    opacity: 1;
+    visibility: visible;
+    border: none;
+}*/
 
 .header .header_box{
     float: right;
-    border-bottom: 1px solid #cecece;
-    width: 100%;
+    width: 85%;
     display: flex;
     flex-direction: row;
-    justify-content: flex-end
+    justify-content: flex-end;
 }
 
 .header .btn_box{
+    width: 45%;
     display: flex;
-    margin-right: 100px;
+    float: right; /* 수정된 부분 */
+    margin-top: -35px;
 }
 
 .header .btn_box button{
@@ -115,13 +167,22 @@ a:active {
 }
 
 
-
 /*Body*/
+body{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+}
+
 .body{
+    min-height: 500px;
+    padding-bottom: 60px;
     margin: 0 auto;
     height: 100%;
     width: 1200px;
-    margin-top: 150px;
+    margin-top: 180px;      /* 기존에 200px인데 로그인에 맞춰져있는 것 같아서.. 회원가입 여백 생각하면 200px은 너무 큰 것 같고.. */
+    margin-bottom: 170px;   /* margin-top처럼 하단에 margin 설정 → 페이지가 다 보일 수 있도록 footer 크기보다 크게 설정 */
 }
 
 .body img{
@@ -129,11 +190,17 @@ a:active {
 }
 
 
-
 /*footer*/
+
+
 .footer{
+    position: fixed;        /* 하단에 고정 */
+    bottom : 0px;           /* 하단 여백 */
+    width: 100%;            /* width 반영 */
     height: 200px;
     border-top: 1px solid #cecece;
+    flex-shrink: 0;
+    background-color: #fff; /* footer 배경화면 지정 */
 }
 
 .footer #footer_box{
@@ -143,44 +210,566 @@ a:active {
     margin-top: 30px;
 }
 
+#footer_box p{
+    color: #555;
+    font-size: 13px;
+    line-height: 21px;
+}
+
+#midbar{
+    margin: 0 120px;  /* 세로선 양쪽 margin 수정 */
+    float: left;
+    width: 1px;
+    height: 160px;
+    background: #cecece;
+}
+
+.link img{
+margin-right: 45px;
+}
+
+/*페이지 좌측 메뉴*/
+
+.left-menu{
+    list-style-type: none;
+    padding: 0px;
+    margin-top: 0px;
+    width: 200px;
+    height: 300px;
+    position: absolute;
+    font-size: 18px;
+}
+.left-menu h2{
+    margin: 20px 0 6px 0px;
+}
+
+
+.left-menu ul{
+    list-style-type: none;
+    padding: 0px;
+    margin-top: 20px;
+    width: 200px;
+    height: 300px;
+    overflow: auto;
+    position: absolute;
+    font-size: 18px;
+}
+
+.left-menu ul li a{
+    text-decoration: none;
+    padding: 10px;
+    display: block;
+    color: #000;
+    font-weight: bold;
+    line-height: 20px;
+    font-size: 17px;
+}
+
+.left-menu ul li a:hover {
+    background: #d6d6d6;
+    color: #000000;
+    transition: all 0.25s ease-in;
+}
+.footer img{
+    height: 50px;
+}
+
 /*=============================================위에는 변경하지 말아주세요===========================================*/
-
-
 
 /*로그인 페이지*/
 
 .login-wrap{
     margin: 0 auto;
-    width: 500px;
-    height: 300px;
+    width: 300px;
+    height: 100%;
+}
+.login-wrap h2{
+    width: 300px;
 }
 
 .login-wrap #login-form{
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
 }
 
 .login-wrap #login-form input{
+    width: 268px;
+    padding: 15px;
+    height: 15px;
+    font-size: 16px;
+    line-height: 24px;
+    border: 1px solid #afafaf;
+    border-radius: 5px;
+    margin: 10px 0;
+}
+
+.login-wrap #login-form input#login-btn{
+    height: 45px;
     width: 300px;
-    height: 35px;
-    border-radius: 6px;
-    border: 1px solid #cecece;
-    margin: 10px auto;
+    background-color: #0056D6;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
+    font-size: 18px;
+    line-height: 18px;
+}
+
+.login-wrap #login-form input#login-btn:hover{
+    float: right;
+    background-color: #004ec4;
+    border-radius: 5px;
+    color: #ffffff;
+    cursor: pointer;
+    height: 45px;
+    width: 300px;
+    font-size: 18px;
+}
+.login-wrap #login-form span{
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.join-link{
+    margin: 20px auto;
+    text-align: center;
+    width: 450px;
+    font-size: 18px;
+    border-top: 1px solid #cecece;
+}
+.join-link a{
+    color: #0042a5;
+    margin-left: 10px;
+}
+.join-link p{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+
+
+.link-box{
+    margin: 20px auto;
+    text-align: center;
+    width: 332px;
+    border-bottom: 1px solid #afafaf;
+    height: 50px;
+}
+
+.link-box a {
+    margin:0 10px;
+    text-decoration: none;
+    color: #333; 
+}
+
+/*회원가입페이지*/
+
+
+
+.join-wrap{
+    width: 360px;
+    height: 100%;
+    margin: 0 auto;
+}
+
+.guidance{
+    font-size: 18px;
+    border: 1px solid #afafaf;
+    border-radius: 10px;
+    width: 100%;
+    height: 100%;
+    padding: 0px 15px 35px 15px;
+    margin-top: 10px;
+}
+.guidance input{
+    width: 15px;
+    height: 15px;
+}
+
+.terms_agree{
+    font-size: 18px;
+}
+.agree_box{
+    margin: 20px 0;
+}
+
+.guidance .agree_box ul{
+    list-style:none;
+    padding: 0;
+}
+    
+.guide_info{
+    float: right;
+    font-size: 15px;
+    text-decoration: underline;
+}
+
+.InpBox{
+    font-size: 20px;
+    border-bottom: 1px solid #afafaf;
+    padding: 10px 0;
+}
+
+.agree_desc{
+    margin: 10px 0;
 }
 
 
 
 
-
-
-.login-wrap #login-btn{
-    float: right;
-    background-color: #fff;
+.item ul{
+    list-style: none;
+    font-size: 22px;
+    padding: 0;
+}
+.item input{
+    width: 100%;
+    padding: 15px;
+    height: 15px;
+    font-size: 16px;
+    line-height: 24px;
+    border: 1px solid #afafaf;
     border-radius: 5px;
-    border: 1px solid #cecece;
+}
+.item input:focus{
+   outline: 1px solid #2d65f2;
+}
+
+.item #id{
+    margin : 10px 0;
+}
+.item ul li{
+    margin: 15px 0;
+}
+
+.item_input{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.item_input span{
+    margin-bottom: 10px;
+}
+
+.item #idcheck{
+    height: 40px;
+    width: 392px;
+    background-color: #0059df;
+    color: #fff;
     cursor: pointer;
-    height: 50px;
-    width: 130px;
+    border-radius: 5px;
+    border: none;
+    font-size: 15px;
+}
+.item #idcheck:hover{
+    height: 40px;
+    width: 392px;
+    background-color: #0042a5;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
+    font-weight: bold;
+    font-size: 15px
+}
+.join-box{
+    width: 100%;
+    margin-top: 30px;
+    text-align: right;
+}
+.join-box input{
+    height: 45px;
+    width: 392px;
+    background-color: #0059df;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
     font-size: 20px;
 }
+.join-box input:hover{
+    height: 45px;
+    width: 392px;
+    background-color: #0042a5;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
+}
+
+
+/*아이디/비밀번호 찾기*/
+
+.find-item{
+    display: flex;
+    justify-content: space-evenly;
+    margin-top: 50px;
+}
+
+.find-item ul{
+    list-style: none;
+    font-size: 22px;
+    padding: 0;
+}
+.find-item input{
+    width: 100%;
+    padding: 15px;
+    height: 15px;
+    font-size: 16px;
+    line-height: 24px;
+    border: 1px solid #afafaf;
+    border-radius: 5px;
+    
+}
+
+.find-item input:focus{
+   outline: 1px solid #2d65f2;
+   width: 100%;
+    padding: 15px;
+    height: 15px;
+    font-size: 16px;
+    line-height: 24px;
+    border: 1px solid #afafaf;
+    border-radius: 5px;
+}
+.find-form{
+    width: 300px;
+    height: 100%;
+}
+.find-form .item_input{
+    margin: 15px 0;
+}
+.find-box input{
+    height: 45px;
+    width: 332px;
+    background-color: #0059df;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
+    font-size: 16px;
+    line-height: 18px;
+}
+.find-box input:hover{
+    height: 45px;
+    width: 332px;
+    background-color: #0042a5;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
+    font-size: 16px;
+    line-height: 18px;
+}
+.find-box input:focus{
+    height: 45px;
+    width: 332px;
+    background-color: #0059df;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
+    font-size: 16px;
+    line-height: 18px;
+}
+
+.mid-wall{
+    width: 1px;
+    height: 350px;
+    background-color: #a1a1a1;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+
+
+
+/*공지/문의 게시판*/
+.noti{
+    float: right;
+    width: 950px;
+    font-size: 17px;
+}
+
+
+.noti h2{
+    width: 950px;
+    float: right;
+    margin-top: 15px;
+}
+
+
+.board-list {
+    width: 100%;
+    border-top: 1px solid #000000;
+    border-right: none;
+}
+
+.board-list ul {
+    clear: left;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+.board-list .subject {
+    text-align: center;
+}
+
+.board-list ul li {
+    text-align: center;
+    float: left;
+    margin: 0;
+    padding: 2px 1px;
+    border: 1px solid rgb(0, 0, 0);
+    border-top: 0;
+    cursor: pointer;
+    height: 40px;
+    line-height: 40px;
+}
+
+.board-list .content {
+    display: none;
+    clear: both;
+    border: 1px solid #000000;
+    padding: 10px;
+    transition: 0.5s ease;
+    border-top: none;
+}
+
+
+.write-btn{
+    height: 30px;
+    width: 80px;
+    background-color: #0059df;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
+    font-size: 18px;
+    line-height: 18px;
+    float: right;
+}
+.write-btn:hover{
+    height: 30px;
+    width: 80px;
+    background-color: #4d85da;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
+    font-size: 18px;
+    line-height: 18px;
+    float: right;
+}
+.write-btn a{
+    font-size: 17px;
+    color: #fff;
+    text-decoration-line: none;   
+}
+
+#bnum{
+    width: 50px;
+    border-right: none;
+}
+#btitle{
+    width: 552px;
+    text-align: left;
+    border-right: none;
+    text-indent: 10px;
+}
+
+#btitle span{
+    margin-left: 5px;
+    font-size: 13px;
+    font-style: italic;
+    background-color: #cecece;
+}
+
+#bid{
+    width: 145px;
+    border-right: none;
+}
+#bdate{
+    width: 190px;
+}
+
+.content p{
+    text-indent: 20px;
+    font-size: 16px;
+}
+
+.comment textarea{
+    outline: none;
+    width: 850px;
+    height: 200px;
+    resize: none;
+    font-size: 17px;
+    margin-left: 20px;
+}
+
+.comment span{
+    float: left;
+}
+
+
+
+/* 글쓰기 페이지*/
+
+.select-box select{
+    width: 802px;
+    height: 30px;
+    font-size: 16px;
+    line-height: 16px;
+}
+
+#in_title input{
+    width: 800px;
+    height: 30px;
+    font-size: 16px;
+    line-height: 16px;
+    text-indent: 10px;
+    color: #333;
+    padding: 0;
+    border: 1px solid #333;
+    border-radius: 3px;
+    margin-top: 10px;
+}
+
+#in_content textarea{
+    width: 796px;
+    height: 300px;
+    margin-top: 10px;
+    resize: none;
+    border: 1px solid #333;
+    font-size: 16px;
+    border-radius: 3px;
+}
+
+.write button{
+    float: left;
+    height: 30px;
+    width: 60px;
+    border-radius: 3px;
+    border: 1px solid;
+    background-color: #0059df;
+    cursor: pointer;
+    color: #fff;
+    margin-right: 10px;
+    font-size: 13px;
+}
+.write button:hover{
+   background-color:  #4d85da;
+
+}
+
+.write button a {
+    color: #fff;
+    text-decoration-line: none;
+}
+
+
+

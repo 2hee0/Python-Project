@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko">
+    
+<head>
+    <!--CSS연결-->
+    <link rel="stylesheet" href="css/keus.css">
+    <!--JS연결-->
+    <script src="js/KEUS.JS"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<div class="header">
+    <div class="header_box">
+        <div class="btn_box">
+            <button onclick="location.href='login.html'" id="login">로그인</p>
+            <button onclick="location.href='join.html'" id="join">회원가입</p>
+        </div>
+    </div>
+    <div class="container">
+        <a href="header.html">
+            <img src="img/logo.png" title="로고">
+        </a>
+        <nav>
+            <ul class="main_menu">
+                <li><a href="weather.html">통계 서비스</a></li>
+                <li><a href="infographic.html">데이터 자료실</a></li>
+                <li><a href="notification.html">알림마당</a></li>
+                <li><a href="introduce.html">소개</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+<!-----------------------------여기서부터--------------------------------->
+<body>
+    <div class="main-body">
+        <div class="section">
+            <input type="radio" name="slide" id="slide01" checked>
+            <input type="radio" name="slide" id="slide02">
+            <input type="radio" name="slide" id="slide03">
+            <div class="slidewrap">
+                <ul class="slidelist">
+                    <!-- 슬라이드 영역 -->
+                    <li class="slideitem">
+                        <a>
+                            <img src="img/banner1.png">
+                        </a>
+                    </li>
+                    <li class="slideitem">
+                        <a>
+                            <img src="img/banner2.png">
+                        </a>
+                    </li>
+                    <li class="slideitem">
+                        <a>
+                            <img src="img/banner3.png">
+                        </a>
+                    </li class="slideitem">
+        
+                    <!-- 좌,우 슬라이드 버튼 -->
+                    <div class="slide-control">
+                        <div>
+                            <label for="slide03" class="left"></label>
+                            <label for="slide02" class="right"></label>
+                        </div>
+                        <div>
+                            <label for="slide01" class="left"></label>
+                            <label for="slide03" class="right"></label>
+                        </div>
+                        <div>
+                            <label for="slide02" class="left"></label>
+                            <label for="slide01" class="right"></label>
+                        </div>
+                    </div>
+        
+                </ul>
+                <!-- 페이징 -->
+                <ul class="slide-pagelist">
+                    <li><label for="slide01"></label></li>
+                    <li><label for="slide02"></label></li>
+                    <li><label for="slide03"></label></li>
+                </ul>
+            </div>
+        </div>
+        <div class="menu-wrap">
+            <div class="menu-list">
+                <ul>
+                    <li>
+                        <a href="weather.html">
+                            <img src="img/menu1.png">
+                            <p>통계 데이터</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="infographic.html">
+                            <img src="img/menu2.png">
+                            <p>인포그래픽</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="notification.html">
+                            <img src="img/menu3.png">
+                            <p>알림마당</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="introduce.html">
+                            <img src="img/menu4.png">
+                            <p>이용안내</p>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="util-wrap">
+            <div class="weather">
+                <h1>날씨 정보</h1>
+                <div class="weather-info">
+                    {% for tag in tags %}
+                        <p>현재 온도 : {{ tag.temperature }}</p>
+                        <p>현재 날씨 : {{ tag.phrase  }}</p>
+                        <p>최고 기온 : {{ tag.temp_high  }}</p>
+                        <p>최고 기온 : {{ tag.temp_low  }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="showboard">
+                <h1>공지/문의</h1>
+                <ul>
+                    <li>게시글1</li>
+                    <li>게시글2</li>
+                    <li>게시글3</li>
+                    <li>게시글4</li>
+                    <li>게시글5</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+<!-----------------------------여기까지--------------------------------->
+<footer>
+    <div class="footer">
+        <div id="footer_box">
+            <div style="float: left;">
+                <a href="https://kiccampus.com/kr/index.php">
+                    <img  src="img/KIC.png" style="cursor: pointer;">
+                </a>
+                <p>
+                Python Project 3조<br>
+                주제 : 날씨(온도)에 따른 전력 사용량 예측<br>
+                조장 : 김지헌<br>
+                부조장 : 이희영<br>
+                조원 : 김용진, 김현욱, 이동현, 하승우<br>
+                </p>
+            </div>
+            <p id="midbar"></p>
+            <div class="link">
+            <p>관련 사이트로 이동하기</p>
+            <a href="https://www.kma.go.kr/kma/"">
+                <img  src="img/weather.png" style="cursor: pointer;">
+            </a>
+            <a href="https://home.kepco.co.kr/kepco/main.do">
+                <img  src="img/electric.png" style="cursor: pointer;">
+            </a>
+            <a href="https://kostat.go.kr/ansk/">
+                <img  src="img/tong.png" style="cursor: pointer;">
+            </a>
+            <p>KEUS 서울시 전기 사용량 통계 사이트</p>
+            <p>Copyright 2023.KEUS All Rights Reserved.㉿</p>
+            </div>
+        </div>
+    </div>
+</footer>
+</html>

@@ -37,21 +37,47 @@
 <body>
     <div class="body">
         <div class="head-img">
-            <img src="img/infographic.jpg">
+            <img src="img/noti.jpg">
         </div>
         <!--페이지별 내용-->
         <div class="sitemap">
             <a>
-                <img src="img/home.png"> > 데이터 자료실 > 인포그래픽
+                <img src="img/home.png"> > 알림마당 > 공지/문의 > 글작성
             </a>
         </div>
-        <div class="noti">
-            <h2>인포그래픽</h2>
-            <p id="explain">한국 전력공사와 기상청의 통계 데이터를 분석하여 작성된 미래 전력 사용량 예측표를 확인하실 수 있습니다.</p>
-            <ul>
-                <img src="img/infor.jpg">
-            </ul>
-        </div>
+        <section class="notice">
+            <!-- 게시글 작성 -->
+            <div class="noti">
+                <h2>문의</h2>
+                    <p id="explain">※자료 요청이나 관리자 권한 설정등 궁금한 사항이 있으시면 언제든지 알려주시면 도움을 드리겠습니다.<br>
+                        ※부적절한 게시글이나 문제가 될 수 있는 게시물은 운영 정책에 따라 삭제될 수 있음을 알려드립니다.</p>
+                <div id="board_write">
+                        <div id="write_area">
+                            <form>
+                                <div class="select-box">
+                                    <select>
+                                        <option value="">게시글 형식을 선택해 주세요.</option>
+                                        <option value="quest">문의</option>
+                                        <option value="notice">공지사항</option>
+                                        <option value="ect">기타</option>
+                                    </select>
+                                </div>
+                                <div id="in_title">
+                                    <input type="text" placeholder="제목을 입력하세요.">
+                                </div>
+                                <div class="wi_line"></div>
+                                <div id="in_content">
+                                    <textarea id="ucontent" placeholder="내용" required></textarea>
+                                </div>
+                                <div class="write">
+                                    <button type="submit">글 작성</button>
+                                    <button><a href="notification.html">취소</a></button>
+                                </div>
+                            </form>
+                        </div>
+                </div>
+            </div>
+        </section>
     </div>
 </body>
 <!-----------------------------여기까지--------------------------------->
