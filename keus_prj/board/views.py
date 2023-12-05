@@ -1,10 +1,11 @@
+from django.contrib.auth.decorators import login_required
 from django.db.models import F
 from django.core.exceptions import PermissionDenied
-from .models import Board, Category
+from .models import Board, Category, Comment
 from django.views.generic import ListView
 from django.db import transaction
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import BoardForm
+from .forms import BoardForm, CommentForm
 from .models import predictData, predictData_storage
 import pandas as pd
 import os
@@ -12,29 +13,41 @@ import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
+from django.urls import reverse
 from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
+from django.contrib import messages
+import json
 
 
 # Create your views here.
 def index(request):
-    boards = Board.objects.values('id', 'title', 'member__username', 'contents', 'created_at')
-    return render(request, 'board/post.html', {'boards': boards})
+    boards = Board.objects.values('id', 'title', 'member__username', 'contents', 'created_at', 'member')
+    comments = Comment.objects.values('member', 'content', 'board', 'created_at', 'member__username')
+    return render(request, 'board/post.html', {'boards': boards, 'comments': comments})
 
+@login_required(login_url='member:login')
 def new_post(request):
-    if request.method == 'POST':
-        boards = BoardForm(request.POST)
+    # 231129 하승우 추가
+    # 모든 카테고리 가져오기
+    categories = Category.objects.all()
+    # 현재 사용자가 스태프인지 확인
+    is_staff = request.user.is_staff
 
+    if request.method == 'POST':
+        # 사용자가 입력한 데이터와 현재 로그인한 사용자 정보를 함께 저장
+        boards = BoardForm(request.POST)
         if boards.is_valid():
-            print(boards.errors)
-            boards.save()
+            board = boards.save(commit=False)
+            board.member = request.user  # 현재 로그인한 사용자 정보를 member 필드에 저장
+            board.save()
             return redirect('board_list')
     else:
         boards = BoardForm()
 
-    return render(request, 'board/new_post.html', {'boards': boards})
+    return render(request, 'board/new_post.html', {'boards': boards, 'categories': categories, 'is_staff': is_staff})
 
 class PostList(ListView):
     model = Board
@@ -67,14 +80,103 @@ def delete_post(request, pk):
 
 
 
+    return render(request, 'board/post.html', {'board': board})
+
+def post_detail(request, pk):
+    board = get_object_or_404(Board, id=pk)
+    posts = Post.objects.filter(board=board)
+    return render(request, 'post_detail.html', {'board': board, 'posts': posts})
+
+def delete_post(request, pk):
+    board = get_object_or_404(Board, id=pk)
+
+    if request.method == 'POST':
+        board.delete()
+        boards = Board.objects.order_by('id').values('id', 'title', 'member__username', 'created_at')
+
+        with transaction.atomic():
+            Board.objects.filter(id__gt=pk).update(id=F('id') - 1)
+
+        data = {'message': '게시글이 삭제되었습니다.', 'boards': list(boards)}
+        return JsonResponse(data)
+
+
+
+    return render(request, 'board/post.html', {'board': board})
+
+@login_required(login_url='member:login')
+def delete_post(request, pk):
+    board = get_object_or_404(Board, id=pk)
+    # 출력
+    print('board.member111 : ', board.member)
+    print('request.user111 : ', request.user)
+
+    # 작성자와 현재 로그인한 사용자가 같은지 확인
+    if board.member != request.user:
+        print('작성자와 현재 로그인한 사용자가 같은지 확인')
+        print('board.member1111 : ', board.member)
+        print('request.user1111 : ', request.user)
+        messages.error(request, '글 작성자만 삭제할 수 있습니다.')
+        return HttpResponseRedirect(reverse('board_list'))
+
+    if request.method == 'POST':
+        try:
+            board.delete()
+            with transaction.atomic():
+                Board.objects.filter(id__gt=pk).update(id=F('id') - 1)
+
+            # 게시글 삭제 후 board_list로 리다이렉션
+            messages.success(request, '게시글이 성공적으로 삭제되었습니다.')
+            return HttpResponseRedirect(reverse('board_list'))
+            #return JsonResponse(jsonObject)
+
+        except Exception as e:
+            # 삭제 실패 메시지 출력
+            print('exception : ', e)
+            messages.error(request, f'게시글 삭제에 실패하였습니다. 원인: {str(e)}')
+
+    return render(request, 'board/post.html', {'board': board})
+### 추가 시작
+@login_required(login_url='member:login')
+def delete_post_test(request):
+    jsonObject = json.loads(request.body)
+    pk = jsonObject.get('postId')
+    board = get_object_or_404(Board, id=pk)
+
+    print("board.member2  ",board.member)
+    print("request.user2  ", request.user)
+
+    # 작성자와 현재 로그인한 사용자가 같은지 확인
+    if board.member != request.user:
+        #messages.error(request, '글 작성자만 삭제할 수 있습니다.')
+        #return HttpResponseRedirect(reverse('board_list'))
+        return JsonResponse({'message':"글 작성자만 삭제할 수 있습니다."})
+
+    if request.method == 'POST':
+        try:
+            board.delete()
+            with transaction.atomic():
+                Board.objects.filter(id__gt=pk).update(id=F('id') - 1)
+
+            # 게시글 삭제 후 board_list로 리다이렉션
+            #messages.success(request, '게시글이 성공적으로 삭제되었습니다.')
+            # return HttpResponseRedirect(reverse('board_list'))
+            return JsonResponse({'message':"게시글이 성공적으로 삭제되었습니다."})
+
+        except Exception as e:
+            # 삭제 실패 메시지 출력
+            print('exception : ', e)
+            messages.error(request, f'게시글 삭제에 실패하였습니다. 원인: {str(e)}')
+
     return render(request, 'board/delete_post.html', {'board': board})
 
+### 추가 끝
 def new_comment(request, pk):
     # 로그인 여부 확인
     if request.user.is_authenticated:
         # get_object_or_404 : 알맞지 않은 pk값이 넘어오면
         # 404 error를 발생시킨다.
-        post = get_object_or_404(Post, pk=pk)
+        board = get_object_or_404(Board, pk=pk)
 
         if request.method == 'POST':
             # 사용자가 입력한 comment를 가지고
@@ -83,13 +185,29 @@ def new_comment(request, pk):
 
             if comment_form.is_valid():
                 comment = comment_form.save(commit=False)
-                comment.post = post
+                comment.board = board
                 comment.author = request.user
                 comment.save()
                 return redirect(comment.get_absolute_url())
-        return redirect(post.get_absolute_url())
+        return redirect(board.get_absolute_url())
     else :
         raise PermissionDenied
+
+
+@login_required(login_url='member:login')
+def delete_post(request, pk):
+    if request.method == 'POST':
+        board = get_object_or_404(Board, pk=pk)
+
+        # 게시글 작성자 혹은 관리자만 게시글 삭제 가능
+        if request.user == board.member or request.user.is_staff:
+            board.delete()
+            return redirect('board_list')  # 삭제 후 목록 페이지로 리다이렉트
+        else:
+            raise PermissionDenied
+    else:
+        return redirect('board_list')  # POST 요청이 아닌 경우 목록 페이지로 리다이렉트
+
 
 
 
@@ -275,3 +393,19 @@ def get_weather_info(request):
         weather_data.append(weather)
     print('weather_data 불러오기' )
     return weather_data
+
+
+def weather(request):
+    return render(request, 'board/weather.html')
+
+
+def electric(request):
+    return render(request, 'board/electric.html')
+
+
+def introduce(request):
+    return render(request, 'board/introduce.html')
+
+
+def infographic(request):
+    return render(request, 'board/infographic.html')

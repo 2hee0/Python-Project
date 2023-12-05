@@ -11,12 +11,122 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+{% include 'main/header.html' %}
 <body>
+    <div class="main-body">
+        <div class="section">
+            <input type="radio" name="slide" id="slide01" checked>
+            <input type="radio" name="slide" id="slide02">
+            <input type="radio" name="slide" id="slide03">
+            <div class="slidewrap">
+                <ul class="slidelist">
+                    <!-- 슬라이드 영역 -->
+                    <li class="slideitem">
+                        <a>
+                            <img src="{% static 'main/img/banner/banner1.png' %}">
+                        </a>
+                    </li>
+                    <li class="slideitem">
+                        <a href="{% url 'weather' %}">
+                            <img src="{% static 'main/img/banner/banner2.png' %}">
+                        </a>
+                    </li>
+                    <li class="slideitem">
+                        <a href="{% url 'infographic' %}">
+                            <img src="{% static 'main/img/banner/banner3.png' %}">
+                        </a>
+                    </li>
 
-    {% include 'main/header.html' %}
+                    <!-- 좌,우 슬라이드 버튼 -->
+                    <div class="slide-control">
+                        <div>
+                            <label for="slide03" class="left"></label>
+                            <label for="slide02" class="right"></label>
+                        </div>
+                        <div>
+                            <label for="slide01" class="left"></label>
+                            <label for="slide03" class="right"></label>
+                        </div>
+                        <div>
+                            <label for="slide02" class="left"></label>
+                            <label for="slide01" class="right"></label>
+                        </div>
+                    </div>
 
-    <h1 style="line-height: 500px; text-align: center;">Welcome, KEUS :)</h1>
-
-    {% include 'main/footer.html' %}
+                </ul>
+                <!-- 페이징 -->
+                <ul class="slide-pagelist">
+                    <li><label for="slide01"></label></li>
+                    <li><label for="slide02"></label></li>
+                    <li><label for="slide03"></label></li>
+                </ul>
+            </div>
+        </div>
+        <div class="menu-wrap">
+            <div class="menu-list">
+                <ul>
+                    <li>
+                        <a href="{% url 'weather' %}">
+                            <img src="{% static 'main/img/menu/menu1.png' %}">
+                            <p>통계 데이터</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'infographic' %}">
+                            <img src="#">
+                            <p>인포그래픽</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'board_list' %}">
+                            <img src="{% static 'main/img/menu/menu3.png' %}">
+                            <p>알림마당</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'introduce' %}">
+                            <img src="{% static 'main/img/menu/menu4.png' %}">
+                            <p>이용안내</p>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="util-wrap">
+            <div class="weather">
+                <h1>날씨 정보</h1>
+                <div class="weather-info">
+                    {% for tag in tags %}
+                        <span>
+                            <p id="now-temp">{{ tag.temperature }}</p>
+                            <p id="now-phrase">{{ tag.phrase  }}</p>
+                        </span>
+                            <p id="now-low">최저 기온 : {{ tag.temp_low  }}</p>
+                            <p id="now-high">최고 기온  : {{ tag.temp_high  }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="showboard">
+                <h1>공지/문의</h1>
+                <div class="board-list">
+                    <ul class="subject">
+                        <li id="bnum">번호</li>
+                        <li id="btitle" style="text-align: center;">제목</li>
+                        <li id="bid">작성자</li>
+                        <li id="bdate">작성일</li>
+                    </ul>
+                    {% for board in boards %}
+                        <ul onclick="go_to_board(this)">
+                            <li id="bnum">{{ forloop.counter }}</li>
+                            <li id="btitle">{{ board.title }}</li>
+                            <li id="bid">{{  board.member__username|default:"작성자 없음" }}</li>
+                            <li id="bdate">{{ board.created_at }}</li>
+                        </ul>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
+{% include 'main/footer.html' %}
 </html>

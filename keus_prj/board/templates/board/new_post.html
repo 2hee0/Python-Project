@@ -18,31 +18,28 @@
     {% include 'main/header.html' %}
 
     <div class="body">
+        <div class="head-img">
+            <img src="{% static 'main/img/noti.jpg' %}">
+        </div>
         <!--페이지별 내용-->
         <section class="notice">
-            <!--좌측 메뉴-->
-            <div class="left-menu">
-                <h2>알림마당</h2>
-                <hr style="width: 200px; float: left;">
-                <ul>
-                    <li><a href="notification.html">공지/문의</a></li>
-                    <li><a href="event.html">이벤트</a></li>
-                </ul>
-            </div>
             <!-- 게시글 작성 -->
                 <div class="noti">
                     <h2>문의</h2>
-                        <p>말 곱게 쓰세요</p>
+                        <p id="explain">※자료 요청이나 관리자 권한 설정등 궁금한 사항이 있으시면 언제든지 알려주시면 도움을 드리겠습니다.<br>
+                        ※부적절한 게시글이나 문제가 될 수 있는 게시물은 운영 정책에 따라 삭제될 수 있음을 알려드립니다.</p>
                     <div id="board_write">
                             <div id="write_area">
                                 <form method="post" action="{% url 'post_write' %}" enctype="multipart/form-data">
                                     {% csrf_token %}
                                     <div class="select-box">
-                                        <select>
+                                        <select name="category">
                                             <option value="">게시글 형식을 선택해 주세요.</option>
-                                            <option value="quest">문의</option>
-                                            <option value="notice">공지사항</option>
-                                            <option value="ect">기타</option>
+                                            {% for category in categories %}
+                                                {% if request.user.is_staff or category.id != 3 %}
+                                                    <option value="{{ category.id }}">{{ category.slug }}</option>
+                                                {% endif %}
+                                            {% endfor %}
                                         </select>
                                     </div>
                                     <div id="in_title">
@@ -57,7 +54,6 @@
                                         <button><a href="{% url 'board_list' %}">취소</a></button>
                                     </div>
                                 </form>
-
                             </div>
                     </div>
                 </div>

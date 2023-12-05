@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+{% load static %}
+<head>
+    <!--CSS연결-->
+    <link href="{% static 'main/css/keus.css' %}" rel="stylesheet" type="text/css">
+    <!--JS연결-->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="{% static 'board/js/data.js' %}" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+{% include 'main/header.html' %}
+<body>
+    <div class="body">
+        <div class="head-img">
+            <img src="{% static 'main/img/service.jpg' %}">
+        </div>
+        <!--페이지별 내용-->
+        
+        <div class="sitemap">
+            <a href="{% url 'main:main' %}">
+                <img src="{% static 'main/img/home.png' %}">
+            </a>
+            > 통계 서비스 > 날씨 데이터
+        </div>
+        <div class="noti">
+            <div class="left-menu">
+                <ul>
+                    <li><a href="{% url 'weather' %}">날씨 통계</a></li>
+                    <li><a href="{% url 'electric' %}">전력 사용량 통계</a></li>
+                </ul>
+            </div>
+            <h2>날씨 통계</h2>
+            <p id="explain">※기상청에서 제공하는 날씨 데이터의 원본을 확인하실 수 있습니다.<br>
+            ※만약 제공되지 않는 데이터나 문제가 발생한 경우, 문의 게시판에 남겨주시면 신속하게 도움을 드리겠습니다</p>
+            <form class="searchForm" id="searchForm">
+                <div class="check">
+                    <ul>
+                        <h3>지역 선택</h3>
+                        <br>
+                        <li><input type="checkbox">서울/경기도</li>
+                        <li><input type="checkbox">강원도</li>
+                        <li><input type="checkbox">충청북도</li>
+                        <li><input type="checkbox">충청남도</li>
+                        <li><input type="checkbox">경상북도</li>
+                        <li><input type="checkbox">경상남도</li>
+                        <li><input type="checkbox">전라북도</li>
+                        <li><input type="checkbox">전라남도</li>
+                        <li><input type="checkbox">제주도</li>
+                    </ul>
+                </div>
+                <br>
+                <div class="check">
+                    <ul>
+                        <h3>연도 선택</h3>
+                        <br>
+                        <li><input type="checkbox">2019</li>
+                        <li><input type="checkbox">2020</li>
+                        <li><input type="checkbox">2021</li>
+                        <li><input type="checkbox">2022</li>
+                        <li><input type="checkbox">2023</li>
+                    </ul>
+                </div>
+                <a>
+                    <button>조회하기</button>
+                </a>
+            </form>
+            <div id="searchResults">
+                <!-- 검색 결과가 여기에 나타납니다. -->
+            </div>    
+            <p>다운로드 버튼을 사용하여 데이터를 다운 받으실 수 있습니다.</p>
+            <a href="" download >
+                <button type="button" id="download">다운로드</button>
+            </a>
+        </div>
+    </div>
+</body>
+
+{% include 'main/footer.html' %}
+</html>

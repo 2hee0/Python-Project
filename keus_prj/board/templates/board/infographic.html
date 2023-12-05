@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+{% load static %}
+<head>
+    <!-- CSS 연결 -->
+    <link href="{% static 'main/css/keus.css' %}" rel="stylesheet" type="text/css">
+    <!-- JS연결 -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>\
+    <script src="{% static 'main/js/keus.js' %}" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+{% include 'main/header.html' %}
+<!-----------------------------여기서부터--------------------------------->
+<body>
+    <div class="body">
+        <div class="head-img">
+            <img src="{% static 'main/img/infographic.jpg' %}">
+        </div>
+        <!--페이지별 내용-->
+        <div class="sitemap">
+            <a href="{% url 'main:main' %}">
+                <img src="{% static 'main/img/home.png' %}">
+            </a>
+            > 데이터 자료실 > 인포그래픽
+        </div>
+        <div class="noti">
+            <h2>인포그래픽</h2>
+            <p id="explain">한국 전력공사와 기상청의 통계 데이터를 분석하여 작성된 미래 전력 사용량 예측표를 확인하실 수 있습니다.</p>
+            <ul>
+                <img src="{% static 'main/img/infor.jpg' %}">
+            </ul>
+        </div>
+    </div>
+</body>
+<!-----------------------------여기까지--------------------------------->
+{% include 'main/footer.html' %}
+</html>
