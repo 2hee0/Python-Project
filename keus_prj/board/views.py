@@ -1,12 +1,11 @@
 from django.contrib.auth.decorators import login_required
 from django.db.models import F
 from django.core.exceptions import PermissionDenied
-from .models import Board, Category, Comment
+from .models import Board, Category, Comment, temp_rawdata, temp_predictData, temp_predictData_storage
 from django.views.generic import ListView
 from django.db import transaction
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import BoardForm, CommentForm
-from .models import predictData, predictData_storage
 import pandas as pd
 import os
 import numpy as np
@@ -16,18 +15,18 @@ from tensorflow.keras.layers import LSTM, Dense
 from django.http import JsonResponse, HttpResponseRedirect
 from django.urls import reverse
 from datetime import datetime
-import requests
-from bs4 import BeautifulSoup
 from django.contrib import messages
 import json
 
 
 # Create your views here.
 def index(request):
-    boards = Board.objects.values('id', 'title', 'member__username', 'contents', 'created_at', 'member')
+    boards = Board.objects.values('id', 'title', 'member__username', 'contents', 'created_at', 'member', 'Board_Status')
     comments = Comment.objects.values('member', 'content', 'board', 'created_at', 'member__username')
     return render(request, 'board/post.html', {'boards': boards, 'comments': comments})
 
+
+# ================================================================================
 @login_required(login_url='member:login')
 def new_post(request):
     # 231129 하승우 추가
@@ -60,11 +59,6 @@ class PostList(ListView):
         context['no_category_post_count'] = Board.objects.filter(category=None).count()
         return context
 
-def post_detail(request, pk):
-    board = get_object_or_404(Board, id=pk)
-    posts = Post.objects.filter(board=board)
-    return render(request, 'post_detail.html', {'board': board, 'posts': posts})
-
 def delete_post(request, pk):
     board = get_object_or_404(Board, id=pk)
 
@@ -87,55 +81,55 @@ def post_detail(request, pk):
     posts = Post.objects.filter(board=board)
     return render(request, 'post_detail.html', {'board': board, 'posts': posts})
 
-def delete_post(request, pk):
-    board = get_object_or_404(Board, id=pk)
-
-    if request.method == 'POST':
-        board.delete()
-        boards = Board.objects.order_by('id').values('id', 'title', 'member__username', 'created_at')
-
-        with transaction.atomic():
-            Board.objects.filter(id__gt=pk).update(id=F('id') - 1)
-
-        data = {'message': '게시글이 삭제되었습니다.', 'boards': list(boards)}
-        return JsonResponse(data)
-
-
-
-    return render(request, 'board/post.html', {'board': board})
-
-@login_required(login_url='member:login')
-def delete_post(request, pk):
-    board = get_object_or_404(Board, id=pk)
-    # 출력
-    print('board.member111 : ', board.member)
-    print('request.user111 : ', request.user)
-
-    # 작성자와 현재 로그인한 사용자가 같은지 확인
-    if board.member != request.user:
-        print('작성자와 현재 로그인한 사용자가 같은지 확인')
-        print('board.member1111 : ', board.member)
-        print('request.user1111 : ', request.user)
-        messages.error(request, '글 작성자만 삭제할 수 있습니다.')
-        return HttpResponseRedirect(reverse('board_list'))
-
-    if request.method == 'POST':
-        try:
-            board.delete()
-            with transaction.atomic():
-                Board.objects.filter(id__gt=pk).update(id=F('id') - 1)
-
-            # 게시글 삭제 후 board_list로 리다이렉션
-            messages.success(request, '게시글이 성공적으로 삭제되었습니다.')
-            return HttpResponseRedirect(reverse('board_list'))
-            #return JsonResponse(jsonObject)
-
-        except Exception as e:
-            # 삭제 실패 메시지 출력
-            print('exception : ', e)
-            messages.error(request, f'게시글 삭제에 실패하였습니다. 원인: {str(e)}')
-
-    return render(request, 'board/post.html', {'board': board})
+# def delete_post(request, pk):
+#     board = get_object_or_404(Board, id=pk)
+#
+#     if request.method == 'POST':
+#         board.delete()
+#         boards = Board.objects.order_by('id').values('id', 'title', 'member__username', 'created_at')
+#
+#         with transaction.atomic():
+#             Board.objects.filter(id__gt=pk).update(id=F('id') - 1)
+#
+#         data = {'message': '게시글이 삭제되었습니다.', 'boards': list(boards)}
+#         return JsonResponse(data)
+#
+#
+#
+#     return render(request, 'board/post.html', {'board': board})
+#
+# @login_required(login_url='member:login')
+# def delete_post(request, pk):
+#     board = get_object_or_404(Board, id=pk)
+#     # 출력
+#     print('board.member111 : ', board.member)
+#     print('request.user111 : ', request.user)
+#
+#     # 작성자와 현재 로그인한 사용자가 같은지 확인
+#     if board.member != request.user:
+#         print('작성자와 현재 로그인한 사용자가 같은지 확인')
+#         print('board.member1111 : ', board.member)
+#         print('request.user1111 : ', request.user)
+#         messages.error(request, '글 작성자만 삭제할 수 있습니다.')
+#         return HttpResponseRedirect(reverse('board_list'))
+#
+#     if request.method == 'POST':
+#         try:
+#             board.delete()
+#             with transaction.atomic():
+#                 Board.objects.filter(id__gt=pk).update(id=F('id') - 1)
+#
+#             # 게시글 삭제 후 board_list로 리다이렉션
+#             messages.success(request, '게시글이 성공적으로 삭제되었습니다.')
+#             return HttpResponseRedirect(reverse('board_list'))
+#             #return JsonResponse(jsonObject)
+#
+#         except Exception as e:
+#             # 삭제 실패 메시지 출력
+#             print('exception : ', e)
+#             messages.error(request, f'게시글 삭제에 실패하였습니다. 원인: {str(e)}')
+#
+#     return render(request, 'board/post.html', {'board': board})
 ### 추가 시작
 @login_required(login_url='member:login')
 def delete_post_test(request):
@@ -194,23 +188,22 @@ def new_comment(request, pk):
         raise PermissionDenied
 
 
-@login_required(login_url='member:login')
-def delete_post(request, pk):
-    if request.method == 'POST':
-        board = get_object_or_404(Board, pk=pk)
-
-        # 게시글 작성자 혹은 관리자만 게시글 삭제 가능
-        if request.user == board.member or request.user.is_staff:
-            board.delete()
-            return redirect('board_list')  # 삭제 후 목록 페이지로 리다이렉트
-        else:
-            raise PermissionDenied
-    else:
-        return redirect('board_list')  # POST 요청이 아닌 경우 목록 페이지로 리다이렉트
-
-
+# @login_required(login_url='member:login')
+# def delete_post(request, pk):
+#     if request.method == 'POST':
+#         board = get_object_or_404(Board, pk=pk)
+#
+#         # 게시글 작성자 혹은 관리자만 게시글 삭제 가능
+#         if request.user == board.member or request.user.is_staff:
+#             board.delete()
+#             return redirect('board_list')  # 삭제 후 목록 페이지로 리다이렉트
+#         else:
+#             raise PermissionDenied
+#     else:
+#         return redirect('board_list')  # POST 요청이 아닌 경우 목록 페이지로 리다이렉트
 
 
+# =====================================================================
 # 지우면 안됨니다. 12월 1일 추가내용
 
 def test(request):
@@ -223,8 +216,21 @@ def temp_lstm(request):
     current_path = os.path.abspath(__file__)
     file_path_model = os.path.join(os.path.dirname(current_path), r'static\\bigdata\\온도 원본.xlsx')
 
+    db_save(current_path)
+
     # 데이터 로드 및 전처리
-    data = pd.read_excel(file_path_model)
+    original_data = pd.read_excel(file_path_model)
+    data = original_data.copy()
+
+    for index, row in data.iterrows():
+       temp_rawdata.objects.create(
+            code=row['지점'],
+            region=row['시군구'],
+            date=row['년월'].date(),
+            avg_temp=row['평균기온(°C)'],
+            avg_max_temp=row['평균최고기온(°C)'],
+            avg_min_temp=row['평균최저기온(°C)'],
+        )
 
     # '년월' 컬럼을 datetime 형식으로 변환
     data['년월'] = pd.to_datetime(data['년월'])
@@ -233,10 +239,10 @@ def temp_lstm(request):
     data['연'] = data['년월'].dt.year
     data['월'] = data['년월'].dt.month
 
-    # '연'과 '월'을 기준으로 정렬
-    data.sort_values(['연', '월'], inplace=True)
+    # '시군구', '연'과 '월'을 기준으로 정렬
+    data.sort_values(['시군구', '연', '월'], inplace=True)
 
-    # '연'과 '월'을 기준으로 index 재설정
+    # '시군구', '연'과 '월'을 기준으로 index 재설정
     data.set_index(['연', '월'], inplace=True)
 
     # '시군구' 컬럼 제외한 데이터 선택, 예측하기 위한 데이터 선별
@@ -289,7 +295,7 @@ def temp_lstm(request):
                                  index=data.index[seq_length:])
 
     # 원본 데이터에서 예측 기간에 해당하는 부분 추출
-    original_data = data.iloc[seq_length:]
+    original_data = original_data.iloc[seq_length:]
 
     # 예측 데이터와 원본 데이터 결합
     result_df = pd.concat([original_data, predicted_df], axis=1)
@@ -318,7 +324,7 @@ def temp_lstm(request):
     # 데이터베이스에 저장
     for index, row in result_df.iterrows():
         # CSV 파일의 날짜 형식이 'YYYY-MM-DD'이므로 이를 datetime 객체로 변환
-        predict_data = predictData(
+        predict_data = temp_predictData(
             code=row['지점'],
             region=row['시군구'],
             date=row['년월'].date(),
@@ -350,10 +356,10 @@ def create_sequences(data, seq_length):
         labels.append(label)
     return np.array(sequences), np.array(labels)
 
-# DB 파일 저장
+# DB에 파일 저장
 def db_save(path):
     # 새로운 인스턴스 생성
-    save_predictData_storage = predictData_storage()
+    save_predictData_storage = temp_predictData_storage()
     # 경로 저장, log 생성
     save_predictData_storage.csv_path = os.path.join(path)
     save_predictData_storage.created_at = datetime.now()
@@ -363,40 +369,18 @@ def db_save(path):
 def search_view(request):
     region = request.GET.get('region', None)
     print('성공',region)
-    predicted_data = predictData.objects.filter(region=region).values()
-    if predicted_data:
-        return JsonResponse({'status': 'success', 'predicted_data': list(predicted_data)})
+    raw_data = temp_rawdata.objects.filter(region=region).values()
+    if raw_data:
+        return JsonResponse({'status': 'success', 'predicted_data': list(raw_data)})
     else:
         return JsonResponse({'status': 'error', 'message': '지역 정보가 없습니다.'})
 
-#날씨 크롤링
-def get_weather_info(request):
-    url = "https://weather.com/ko-KR/weather/today/l/86a344a14f9715ce3ebdb0e167971a17de07d95eebf0dc29e450f8bd89c73678"
-    res = requests.get(url)
-    res.raise_for_status()  # 정상 200
-    soup = BeautifulSoup(res.text, "lxml")
-
-    tags = soup.select(".CurrentConditions--columns--30npQ")
-
-    weather_data = []
-    for tag in tags:
-        temp_high_low = tag.find(class_='CurrentConditions--tempHiLoValue--3T1DG')
-        temp_high = temp_high_low.find_all('span', {'data-testid': 'TemperatureValue'})[0].text
-        temp_low = temp_high_low.find_all('span', {'data-testid': 'TemperatureValue'})[1].text
-
-        weather = {
-            'temperature': tag.find(class_='CurrentConditions--tempValue--MHmYY').text,
-            'phrase': tag.find(class_='CurrentConditions--phraseValue--mZC_p').text,
-            'temp_high': temp_high,
-            'temp_low': temp_low,
-        }
-        weather_data.append(weather)
-    print('weather_data 불러오기' )
-    return weather_data
-
-
 def weather(request):
-    return render(request, 'board/weather.html')
+    # 데이터 검색
+    region = request.GET.get('region')
+    year = request.GET.get('year')
+    search_data = temp_rawdata.objects.filter(region=region, date__year=year)
+    return render(request, 'board/weather.html', {'search_data':search_data})
 
 
 def electric(request):

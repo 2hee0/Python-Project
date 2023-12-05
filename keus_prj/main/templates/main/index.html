@@ -73,7 +73,7 @@
                     </li>
                     <li>
                         <a href="{% url 'infographic' %}">
-                            <img src="#">
+                            <img src="{% static 'main/img/menu/menu2.png' %}">
                             <p>인포그래픽</p>
                         </a>
                     </li>
@@ -94,20 +94,22 @@
         </div>
         <div class="util-wrap">
             <div class="weather">
-                <h1>날씨 정보</h1>
+                <h2>날씨 정보</h2>
+                <hr>
+                <br>
                 <div class="weather-info">
                     {% for tag in tags %}
                         <span>
-                            <p id="now-temp">{{ tag.temperature }}</p>
+                            <p id="now-temp">{{ tag.temperature }}C</p>
                             <p id="now-phrase">{{ tag.phrase  }}</p>
                         </span>
-                            <p id="now-low">최저 기온 : {{ tag.temp_low  }}</p>
-                            <p id="now-high">최고 기온  : {{ tag.temp_high  }}</p>
+                            <p id="now-low">최저 기온 : {{ tag.temp_low  }}C</p>
+                            <p id="now-high">최고 기온  : {{ tag.temp_high  }}C</p>
                     {% endfor %}
                 </div>
             </div>
             <div class="showboard">
-                <h1>공지/문의</h1>
+                <h2>공지/문의</h2>
                 <div class="board-list">
                     <ul class="subject">
                         <li id="bnum">번호</li>

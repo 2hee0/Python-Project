@@ -6,7 +6,7 @@ from .models import Board, Comment
 class BoardForm(forms.ModelForm):
     class Meta:
         model = Board
-        fields = ['title', 'category', 'contents', 'file_upload']
+        fields = ['title', 'category', 'contents', 'file_upload', 'Board_Status']
 
 class CommentForm(forms.ModelForm):
     class Meta:

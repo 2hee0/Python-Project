@@ -6,6 +6,7 @@
     <link href="{% static 'main/css/keus.css' %}" rel="stylesheet" type="text/css">
     <!--JS연결-->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="{% static 'main/js/keus.js' %}" defer></script>
     <script src="{% static 'board/js/data.js' %}" defer></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,58 +19,175 @@
         <div class="head-img">
             <img src="{% static 'main/img/service.jpg' %}">
         </div>
-        <!--페이지별 내용-->
-        
         <div class="sitemap">
             <a href="{% url 'main:main' %}">
                 <img src="{% static 'main/img/home.png' %}">
             </a>
             > 통계 서비스 > 날씨 데이터
         </div>
+        <div class="left-menu">
+            <ul>
+                <li><a href="{% url 'weather' %}">날씨 통계</a></li>
+                <li><a href="{% url 'electric' %}">전력 사용량 통계</a></li>
+            </ul>
+        </div>
+        <!--페이지별 내용-->
         <div class="noti">
-            <div class="left-menu">
-                <ul>
-                    <li><a href="{% url 'weather' %}">날씨 통계</a></li>
-                    <li><a href="{% url 'electric' %}">전력 사용량 통계</a></li>
-                </ul>
-            </div>
             <h2>날씨 통계</h2>
             <p id="explain">※기상청에서 제공하는 날씨 데이터의 원본을 확인하실 수 있습니다.<br>
-            ※만약 제공되지 않는 데이터나 문제가 발생한 경우, 문의 게시판에 남겨주시면 신속하게 도움을 드리겠습니다</p>
             <form class="searchForm" id="searchForm">
-                <div class="check">
-                    <ul>
-                        <h3>지역 선택</h3>
-                        <br>
-                        <li><input type="checkbox">서울/경기도</li>
-                        <li><input type="checkbox">강원도</li>
-                        <li><input type="checkbox">충청북도</li>
-                        <li><input type="checkbox">충청남도</li>
-                        <li><input type="checkbox">경상북도</li>
-                        <li><input type="checkbox">경상남도</li>
-                        <li><input type="checkbox">전라북도</li>
-                        <li><input type="checkbox">전라남도</li>
-                        <li><input type="checkbox">제주도</li>
-                    </ul>
-                </div>
-                <br>
-                <div class="check">
-                    <ul>
-                        <h3>연도 선택</h3>
-                        <br>
-                        <li><input type="checkbox">2019</li>
-                        <li><input type="checkbox">2020</li>
-                        <li><input type="checkbox">2021</li>
-                        <li><input type="checkbox">2022</li>
-                        <li><input type="checkbox">2023</li>
-                    </ul>
-                </div>
+                <span>
+                    <div class="check">
+                        <label for="region">지역 선택:</label>
+                        <select id="region" name="region">
+                            <optgroup label="서울/경기도">
+                                    <option value="서울">서울</option>
+                                    <option value="경기도">경기도</option>
+                                    <option value="동두천">동두천</option>
+                                    <option value="파주">파주</option>
+                                    <option value="양평">양평</option>
+                                    <option value="이천">이천</option>
+                                </optgroup>
+                                <optgroup label="강원도">
+                                    <option value="강릉">강릉</option>
+                                    <option value="대관령">대관령</option>
+                                    <option value="동해">동해</option>
+                                    <option value="북강릉">북강릉</option>
+                                    <option value="북춘천">북춘천</option>
+                                    <option value="속초">속초</option>
+                                    <option value="철원">철원</option>
+                                    <option value="춘천">춘천</option>
+                                    <option value="원주">원주</option>
+                                </optgroup>
+                                <optgroup label="충청북도">
+                                    <option value="충주">충주</option>
+                                    <option value="제천">제천</option>
+                                    <option value="보은">보은</option>
+                                    <option value="청주">청주</option>
+                                    <option value="충주">충주</option>
+                                    <option value="음성">음성</option>
+                                    <option value="진천">진천</option>
+                                </optgroup>
+                                <optgroup label="충청남도">
+                                    <option value="서산">서산</option>
+                                    <option value="아산">아산</option>
+                                    <option value="천안">천안</option>
+                                    <option value="보령">보령</option>
+                                    <option value="부여">부여</option>
+                                    <option value="금산">금산</option>
+                                    <option value="홍성">홍성</option>
+                                    <option value="예산">예산</option>
+                                    <option value="공주">공주</option>
+                                    <option value="논산">논산</option>
+                                </optgroup>
+                                <optgroup label="경상북도">
+                                    <option value="울진">울진</option>
+                                    <option value="경주">경주</option>
+                                    <option value="포항">포항</option>
+                                    <option value="군위">군위</option>
+                                    <option value="의성">의성</option>
+                                    <option value="영천">영천</option>
+                                    <option value="경산">경산</option>
+                                    <option value="안동">안동</option>
+                                    <option value="상주">상주</option>
+                                    <option value="영덕">영덕</option>
+                                    <option value="구미">구미</option>
+                                </optgroup>
+                                <optgroup label="경상남도">
+                                    <option value="창원">창원</option>
+                                    <option value="김해">김해</option>
+                                    <option value="양산">양산</option>
+                                    <option value="거제">거제</option>
+                                    <option value="통영">통영</option>
+                                    <option value="사천">사천</option>
+                                    <option value="진주">진주</option>
+                                    <option value="밀양">밀양</option>
+                                    <option value="함양">함양</option>
+                                    <option value="거창">거창</option>
+                                </optgroup>
+                                <optgroup label="전라북도">
+                                    <option value="전주">전주</option>
+                                    <option value="군산">군산</option>
+                                    <option value="익산">익산</option>
+                                    <option value="정읍">정읍</option>
+                                    <option value="남원">남원</option>
+                                    <option value="부안">부안</option>
+                                    <option value="임실">임실</option>
+                                    <option value="순창">순창</option>
+                                    <option value="고창">고창</option>
+                                </optgroup>
+                                <optgroup label="전라남도">
+                                    <option value="목포">목포</option>
+                                    <option value="여수">여수</option>
+                                    <option value="순천">순천</option>
+                                    <option value="광양">광양</option>
+                                    <option value="나주">나주</option>
+                                    <option value="담양">담양</option>
+                                    <option value="함평">함평</option>
+                                    <option value="무안">무안</option>
+                                    <option value="영광">영광</option>
+                                    <option value="장성">장성</option>
+                                    <option value="화순">화순</option>
+                                </optgroup>
+                                <optgroup label="제주특별자치도">
+                                    <option value="제주">제주</option>
+                                    <option value="서귀포">서귀포</option>
+                                    <option value="성산">성산</option>
+                                    <option value="고산">고산</option>
+                                </optgroup>
+                        </select>
+                    </div>
+                    <div class="check">
+                        <label for="year">연도 선택:</label>
+                        <select id="year" name="year">
+                            <option value="2019">2019</option>
+                            <option value="2020">2020</option>
+                            <option value="2021">2021</option>
+                            <option value="2022">2022</option>
+                            <option value="2023">2023</option>
+                        </select>
+                    </div>
+                </span>
                 <a>
                     <button>조회하기</button>
                 </a>
             </form>
+            <br>
+            <span id="notice">
+            <p>데이터를 호출하는 데는 약간의 시간이 소요될 수 있습니다.</p>
+            <p>만약 제공되지 않는 정보가 있거나 데이터에 오류가 발생한 경우, 문의 게시판에 남겨주시면 신속하게 도움을 드리겠습니다.</p>
+            </span>
             <div id="searchResults">
-                <!-- 검색 결과가 여기에 나타납니다. -->
+                {% if search_data %}
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>지점</th>
+                                <th>시군구</th>
+                                <th>년월</th>
+                                <th>평균 온도</th>
+                                <th>평균 최고 온도</th>
+                                <th>평균 최소 온도</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for data in search_data %}
+                            <tr>
+                                <td>{{ data.code }}</td>
+                                <td>{{ data.region }}</td>
+                                <td>{{ data.date }}</td>
+                                <td>{{ data.avg_temp }}</td>
+                                <td>{{ data.avg_max_temp }}</td>
+                                <td>{{ data.avg_min_temp }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% elif region and year %}
+                    <p>{{ region }} 지역의 {{ year }} 년도에 대한 날씨 데이터가 없습니다.</p>
+                {% else %}
+                    <p>날씨 데이터를 확인하려면 검색을 진행해주세요.</p>
+                {% endif %}
             </div>    
             <p>다운로드 버튼을 사용하여 데이터를 다운 받으실 수 있습니다.</p>
             <a href="" download >

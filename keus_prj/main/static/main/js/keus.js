@@ -147,7 +147,7 @@ function validate() {
     var phone = $("#phone").val().trim();
     var phoneRegex = /^[0-9]+$/;
 
-    if (!phoneRegex.test(phone)) {
+    if (!phoneRegex.test(콜)) {
         alert("숫자만 입력해주세요.");
         $("#phone").focus();
         return false;
@@ -201,42 +201,3 @@ Promise.all([emailCheckPromise, phoneCheckPromise])
     });
      event.preventDefault();
 }
-
-/*게시판 내용 출력 */
-function toggleContent(item) {
-    var content = item.nextElementSibling;
-    content.style.display = (content.style.display === 'none' || content.style.display === '') ? 'block' : 'none';
-}
-
-/* 게시판으로 가기 */
-function go_to_board(item){
-    document.location.href = 'board/';
-}
-
-
-/* 날씨 크롤링 관련 스크립트 */
-function displayResults(predictedData) {
-    var tableHtml = '<table border="1">';
-
-    // 테이블 헤더
-    tableHtml += '<thead><tr>';
-    tableHtml += '<th>년월</th>';
-    tableHtml += '<th>평균온도</th>';
-    tableHtml += '<th>평균 최고 온도</th>';
-    tableHtml += '<th>평균 최소 온도</th>';
-    tableHtml += '</tr></thead>';
-
-    // 테이블 본문
-    tableHtml += '<tbody>';
-    for (var i = 0; i < predictedData.length; i++) {
-        tableHtml += '<tr>';
-        tableHtml += '<td>' + predictedData[i].date + '</td>';
-        tableHtml += '<td>' + predictedData[i].avg_temp + '</td>';
-        tableHtml += '<td>' + predictedData[i].avg_max_temp + '</td>';
-        tableHtml += '<td>' + predictedData[i].avg_min_temp + '</td>';
-        tableHtml += '</tr>';
-    }
-    tableHtml += '</tbody></table>';
-
-    document.getElementById('searchResults').innerHTML = tableHtml;
-    }

@@ -48,17 +48,13 @@
                     {% for board in boards %}
                         <ul onclick="toggleContent(this)">
                             <li id="bnum">{{ forloop.counter }}</li>
-                            <li id="btitle">{{ board.title }}</li>
+                            <li id="btitle">[{{ board.Board_Status }}]{{ board.title }}</li>
                             <li id="bid">{{  board.member__username|default:"작성자 없음" }}</li>
                             <li id="bdate">{{ board.created_at }}</li>
                         </ul>
                         <div class="content">
                             <p>
                                 {{ board.contents }}
-                            </p>
-                            <p>
-                                현재 사용자의 ID: {{ user.id }}<br>
-                                게시물 작성자의 ID: {{ board.member }}<br>
                             </p>
                             <!-- CSRF 토큰 추가 -->
                                 {% if user.id == board.member or user.is_staff %}

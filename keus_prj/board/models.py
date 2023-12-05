@@ -82,47 +82,54 @@ class Post(models.Model):
     def __str__(self):
         return self.title
 
-class predictData_storage(models.Model):
+class temp_rawdata_storage(models.Model):
+    csv_path = models.CharField(max_length=255)             # 파일 저장 경로
+    created_at = models.DateTimeField(auto_now_add=True)    # log data
+
+class temp_rawdata(models.Model):
+    code = models.IntegerField()                # 지점
+    region = models.CharField(max_length=255)   # 시군구
+    date = models.DateField()                   # 년월
+    avg_temp = models.FloatField()              # 평균 온도
+    avg_max_temp = models.FloatField()          # 평균 최고 온도
+    avg_min_temp = models.FloatField()          # 평균 최소 온도
+    storage = models.ForeignKey(temp_rawdata_storage, null=True, on_delete=models.SET_NULL)  # storage fk설정
+
+
+
+
+class temp_predictData_storage(models.Model):
     # 파일 저장 경로
     csv_path = models.CharField(max_length=255)
     # log data
     created_at = models.DateTimeField(auto_now_add=True)
 
-class predictData(models.Model):
-    # predictData_storage  fk설정
-    storage_id = models.ForeignKey(predictData_storage, null=True, on_delete=models.SET_NULL)
-    # 지점
-    code = models.IntegerField()
-    # 시군구
-    region = models.CharField(max_length=255)
-    # 년월
-    date = models.DateField()
-    # 평균 온도
-    avg_temp = models.FloatField()
-    # 평균 최고 온도
-    avg_max_temp = models.FloatField()
-    # 평균 최소 온도
-    avg_min_temp = models.FloatField()
-    # 예측 평균 온도
-    pre_avg_temp = models.FloatField()
-    # 예측 평균 최고 온도
-    pre_avg_max_temp = models.FloatField()
-    # 예측 평균 최소 온도
-    pre_avg_min_temp = models.FloatField()
+class temp_predictData(models.Model):
+    code = models.IntegerField()            # 지점
+    region = models.CharField(max_length=255) # 시군구
+    date = models.DateField()               # 년월
+    avg_temp = models.FloatField()          # 평균 온도
+    avg_max_temp = models.FloatField()      # 평균 최고 온도
+    avg_min_temp = models.FloatField()      # 평균 최소 온도
+    pre_avg_temp = models.FloatField()      # 예측 평균 온도
+    pre_avg_max_temp = models.FloatField()  # 예측 평균 최고 온도
+    pre_avg_min_temp = models.FloatField()  # 예측 평균 최소 온도
+    storage = models.ForeignKey(temp_predictData_storage, null=True, on_delete=models.SET_NULL)  # storage fk설정
+    rawdata = models.ForeignKey(temp_rawdata, null=True, on_delete=models.SET_NULL) # rawdata fk 설정
 
     def __str__(self):
         return f"{self.date} - {self.region} - {self.avg_temp}"
 
-class predict_future_Data(models.Model):
-    # 지점
-    code = models.IntegerField()
-    # 시군구
-    region = models.CharField(max_length=255)
-    # 년월
-    date = models.DateField()
-    # 예측 평균 온도
-    pre_avg_temp = models.FloatField()
-    # 예측 평균 최고 온도
-    pre_avg_max_temp = models.FloatField()
-    # 예측 평균 최소 온도
-    pre_avg_min_temp = models.FloatField()
+class temp_predict_future_Data_storage(models.Model):
+    csv_path = models.CharField(max_length=255)             # 파일 저장 경로
+    created_at = models.DateTimeField(auto_now_add=True)    # log data
+
+class temp_predict_future_Data(models.Model):
+    code = models.IntegerField()                # 지점
+    region = models.CharField(max_length=255)   # 시군구
+    date = models.DateField()                   # 년월
+    pre_avg_temp = models.FloatField()          # 예측 평균 온도
+    pre_avg_max_temp = models.FloatField()      # 예측 평균 최고 온도
+    pre_avg_min_temp = models.FloatField()      # 예측 평균 최소 온도
+    storage = models.ForeignKey(temp_predict_future_Data_storage, null=True, on_delete=models.SET_NULL)  # storage fk설정
+    rawdata = models.ForeignKey(temp_rawdata, null=True, on_delete=models.SET_NULL) # rawdata fk 설정
