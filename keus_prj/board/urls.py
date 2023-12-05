@@ -10,7 +10,7 @@ urlpatterns=[
     path('post/<int:pk>/add_comment/', views.add_comment, name='add_comment'),  # 댓글 추가
     path('test/',views.test),
     path('test/predict/',views.temp_lstm),
-    path('search/', views.search_view),
+    path('test/predict_ele/',views.ele_lstm),
     path('weather/', views.weather, name='weather'),
     path('electric/', views.electric, name='electric'),
     path('introduce/', views.introduce, name='introduce'),

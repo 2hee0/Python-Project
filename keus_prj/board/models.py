@@ -133,3 +133,18 @@ class temp_predict_future_Data(models.Model):
     pre_avg_min_temp = models.FloatField()      # 예측 평균 최소 온도
     storage = models.ForeignKey(temp_predict_future_Data_storage, null=True, on_delete=models.SET_NULL)  # storage fk설정
     rawdata = models.ForeignKey(temp_rawdata, null=True, on_delete=models.SET_NULL) # rawdata fk 설정
+
+
+class ele_rawdata_storage(models.Model):
+    csv_path = models.CharField(max_length=255)             # 파일 저장 경로
+    created_at = models.DateTimeField(auto_now_add=True)    # log data
+
+class ele_rawdata(models.Model):
+    date = models.DateField()                   # 년월
+    trial = models.CharField(max_length=255)    # 시구
+    region = models.CharField(max_length=255)   # 시군구
+    contract = models.CharField(max_length=255) # 계약 구분
+    total_use = models.FloatField()             # 사용량
+    total_price = models.FloatField()           # 전기 요금
+    avg_price = models.FloatField()             # 평균판매단가
+    storage = models.ForeignKey(ele_rawdata_storage, null=True, on_delete=models.SET_NULL)  # storage fk설정

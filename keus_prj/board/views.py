@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import F
-from .models import Board, Category, Comment, temp_rawdata, temp_predictData, temp_predictData_storage, Post
+from .models import Board, Category, Comment, temp_rawdata, temp_predictData, temp_predictData_storage, Post, ele_rawdata_storage, ele_rawdata
 from django.views.generic import ListView
 from django.db import transaction
 from django.shortcuts import render, redirect, get_object_or_404
@@ -198,8 +198,7 @@ def temp_lstm(request):
     db_save(current_path)
 
     # 데이터 로드 및 전처리
-    original_data = pd.read_excel(file_path_model)
-    data = original_data.copy()
+    data = pd.read_excel(file_path_model)
 
     for index, row in data.iterrows():
        temp_rawdata.objects.create(
@@ -209,7 +208,6 @@ def temp_lstm(request):
             avg_temp=row['평균기온(°C)'],
             avg_max_temp=row['평균최고기온(°C)'],
             avg_min_temp=row['평균최저기온(°C)'],
-            storage=some_existing_instance
         )
 
 
@@ -277,10 +275,10 @@ def temp_lstm(request):
                                  index=data.index[seq_length:])
 
     # 원본 데이터에서 예측 기간에 해당하는 부분 추출
-    original_data = original_data.iloc[seq_length:]
+    data = data.iloc[seq_length:]
 
     # 예측 데이터와 원본 데이터 결합
-    result_df = pd.concat([original_data, predicted_df], axis=1)
+    result_df = pd.concat([data, predicted_df], axis=1)
 
     # 현재 날짜 및 시간을 가져옴
     current_datetime = datetime.now()
@@ -316,8 +314,6 @@ def temp_lstm(request):
             pre_avg_temp=row['예측 평균기온(°C)'],
             pre_avg_max_temp=row['예측 평균최고기온(°C)'],
             pre_avg_min_temp=row['예측 평균최저기온(°C)'],
-            storage=some_existing_instance,
-            rawdata=some_existing_instance,
         )
         predict_data.save()
 
@@ -363,16 +359,17 @@ def weather(request):
     # 데이터 검색
     region = request.GET.get('region')
     year = request.GET.get('year')
-    # search_data = temp_rawdata.objects.filter(region=region, date__year=year)
-    search_data = temp_rawdata.objects.filter(region=region, date__year=year).values('id').annotate(max_id=Max('id'))
-    # 중복 제거하고 최신 데이터만 가져옴
-    search_data = temp_rawdata.objects.filter(id__in=search_data.values('max_id'))
+    search_data = temp_rawdata.objects.filter(region=region, date__year=year)
 
     return render(request, 'board/weather.html', {'search_data':search_data})
 
 
 def electric(request):
-    return render(request, 'board/electric.html')
+    region = request.GET.get('region')
+    year = request.GET.get('year')
+    search_data = ele_rawdata.objects.filter(region=region, date__year=year)
+
+    return render(request, 'board/electric.html', {'search_data': search_data})
 
 
 def introduce(request):
@@ -381,3 +378,29 @@ def introduce(request):
 
 def infographic(request):
     return render(request, 'board/infographic.html')
+
+
+def ele_lstm(request):
+    print('전력 데이터 저장시작')
+    # 데이터 경로 가져오기
+    current_path = os.path.abspath(__file__)
+    file_path_model = os.path.join(os.path.dirname(current_path), r'static\\bigdata\\전력 원본 데이터.xlsx')
+
+    db_save(current_path)
+
+    # 데이터 로드 및 전처리
+    original_data = pd.read_excel(file_path_model)
+    data = original_data.copy()
+
+    for index, row in data.iterrows():
+        ele_rawdata.objects.create(
+            date=row['년월'].date(),
+            trial=row['시구'],
+            region=row['시군구'],
+            contract=row['계약 구분'],
+            total_use=row['사용량'],
+            total_price=row['전기 요금'],
+            avg_pricce=row['평균판매단가'],
+        )
+
+    return JsonResponse({'status': 'success', 'message': '완료되었습니다.'})
