@@ -7,7 +7,7 @@ urlpatterns=[
     path('<int:pk>/', views.post_detail, name='post_detail'),
     path('post/<int:pk>/delete/', views.delete_post, name='delete_post'),
     path('post/delete/', views.delete_post_test, name='delete_post_test'),
-    path('new_comment/',views.new_comment, name='new_comment'),
+    path('post/<int:pk>/add_comment/', views.add_comment, name='add_comment'),  # 댓글 추가
     path('test/',views.test),
     path('test/predict/',views.temp_lstm),
     path('search/', views.search_view),

@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import F
-from django.core.exceptions import PermissionDenied
-from .models import Board, Category, Comment, temp_rawdata, temp_predictData, temp_predictData_storage
+from .models import Board, Category, Comment, temp_rawdata, temp_predictData, temp_predictData_storage, Post
 from django.views.generic import ListView
 from django.db import transaction
 from django.shortcuts import render, redirect, get_object_or_404
@@ -12,7 +12,7 @@ import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.urls import reverse
 from datetime import datetime
 from django.contrib import messages
@@ -25,8 +25,6 @@ def index(request):
     comments = Comment.objects.values('member', 'content', 'board', 'created_at', 'member__username')
     return render(request, 'board/post.html', {'boards': boards, 'comments': comments})
 
-
-# ================================================================================
 @login_required(login_url='member:login')
 def new_post(request):
     # 231129 하승우 추가
@@ -58,93 +56,26 @@ class PostList(ListView):
         context['categories'] = Category.objects.all()
         context['no_category_post_count'] = Board.objects.filter(category=None).count()
         return context
-
-def delete_post(request, pk):
-    board = get_object_or_404(Board, id=pk)
-
-    if request.method == 'POST':
-        board.delete()
-        boards = Board.objects.order_by('id').values('id', 'title', 'member__username', 'created_at')
-
-        with transaction.atomic():
-            Board.objects.filter(id__gt=pk).update(id=F('id') - 1)
-
-        data = {'message': '게시글이 삭제되었습니다.', 'boards': list(boards)}
-        return JsonResponse(data)
-
-
-
-    return render(request, 'board/post.html', {'board': board})
-
 def post_detail(request, pk):
     board = get_object_or_404(Board, id=pk)
     posts = Post.objects.filter(board=board)
     return render(request, 'post_detail.html', {'board': board, 'posts': posts})
 
-# def delete_post(request, pk):
-#     board = get_object_or_404(Board, id=pk)
-#
-#     if request.method == 'POST':
-#         board.delete()
-#         boards = Board.objects.order_by('id').values('id', 'title', 'member__username', 'created_at')
-#
-#         with transaction.atomic():
-#             Board.objects.filter(id__gt=pk).update(id=F('id') - 1)
-#
-#         data = {'message': '게시글이 삭제되었습니다.', 'boards': list(boards)}
-#         return JsonResponse(data)
-#
-#
-#
-#     return render(request, 'board/post.html', {'board': board})
-#
-# @login_required(login_url='member:login')
-# def delete_post(request, pk):
-#     board = get_object_or_404(Board, id=pk)
-#     # 출력
-#     print('board.member111 : ', board.member)
-#     print('request.user111 : ', request.user)
-#
-#     # 작성자와 현재 로그인한 사용자가 같은지 확인
-#     if board.member != request.user:
-#         print('작성자와 현재 로그인한 사용자가 같은지 확인')
-#         print('board.member1111 : ', board.member)
-#         print('request.user1111 : ', request.user)
-#         messages.error(request, '글 작성자만 삭제할 수 있습니다.')
-#         return HttpResponseRedirect(reverse('board_list'))
-#
-#     if request.method == 'POST':
-#         try:
-#             board.delete()
-#             with transaction.atomic():
-#                 Board.objects.filter(id__gt=pk).update(id=F('id') - 1)
-#
-#             # 게시글 삭제 후 board_list로 리다이렉션
-#             messages.success(request, '게시글이 성공적으로 삭제되었습니다.')
-#             return HttpResponseRedirect(reverse('board_list'))
-#             #return JsonResponse(jsonObject)
-#
-#         except Exception as e:
-#             # 삭제 실패 메시지 출력
-#             print('exception : ', e)
-#             messages.error(request, f'게시글 삭제에 실패하였습니다. 원인: {str(e)}')
-#
-#     return render(request, 'board/post.html', {'board': board})
-### 추가 시작
+#수정
+#수정
 @login_required(login_url='member:login')
-def delete_post_test(request):
-    jsonObject = json.loads(request.body)
-    pk = jsonObject.get('postId')
+def delete_post(request, pk):
     board = get_object_or_404(Board, id=pk)
-
-    print("board.member2  ",board.member)
-    print("request.user2  ", request.user)
+    # 출력
+    print('board.member111 : ', board.member)
+    print('request.user111 : ', request.user)
 
     # 작성자와 현재 로그인한 사용자가 같은지 확인
-    if board.member != request.user:
-        #messages.error(request, '글 작성자만 삭제할 수 있습니다.')
-        #return HttpResponseRedirect(reverse('board_list'))
-        return JsonResponse({'message':"글 작성자만 삭제할 수 있습니다."})
+    if not (board.member == request.user or request.user.is_staff):             # request.user.is_staff 추가
+        print('board.member : ', board.member)
+        print('request.user : ', request.user)
+        messages.error(request, '글 작성자 또는 스태프만 삭제할 수 있습니다.')
+        return HttpResponseRedirect(reverse('board_list'))
 
     if request.method == 'POST':
         try:
@@ -153,9 +84,44 @@ def delete_post_test(request):
                 Board.objects.filter(id__gt=pk).update(id=F('id') - 1)
 
             # 게시글 삭제 후 board_list로 리다이렉션
-            #messages.success(request, '게시글이 성공적으로 삭제되었습니다.')
+            messages.success(request, '게시글이 성공적으로 삭제되었습니다.')
+            return HttpResponseRedirect(reverse('board_list'))
+            #return JsonResponse(jsonObject)
+
+        except Exception as e:
+            # 삭제 실패 메시지 출력
+            print('exception : ', e)
+            messages.error(request, f'게시글 삭제에 실패하였습니다. 원인: {str(e)}')
+
+    return render(request, 'board/delete_post.html', {'board': board})
+
+
+### 추가 시작
+@login_required(login_url='member:login')
+def delete_post_test(request):
+    jsonObject = json.loads(request.body)
+    pk = jsonObject.get('postId')
+    board = get_object_or_404(Board, id=pk)
+
+    print("board.member  ",board.member)
+    print("request.user  ", request.user)
+
+    # 작성자와 현재 로그인한 사용자가 같은지 확인
+    if not (board.member == request.user or request.user.is_staff):  # request.user.is_staff 추가
+        # messages.error(request, '글 작성자만 삭제할 수 있습니다.')
+        # return HttpResponseRedirect(reverse('board_list'))
+        return JsonResponse({'message': "글 작성자 또는 스태프만 삭제할 수 있습니다."})
+
+    if request.method == 'POST':
+        try:
+            board.delete()
+            with transaction.atomic():
+                Board.objects.filter(id__gt=pk).update(id=F('id') - 1)
+
+            # 게시글 삭제 후 board_list로 리다이렉션
+            # messages.success(request, '게시글이 성공적으로 삭제되었습니다.')
             # return HttpResponseRedirect(reverse('board_list'))
-            return JsonResponse({'message':"게시글이 성공적으로 삭제되었습니다."})
+            return JsonResponse({'message': "게시글이 성공적으로 삭제되었습니다."})
 
         except Exception as e:
             # 삭제 실패 메시지 출력
@@ -165,45 +131,58 @@ def delete_post_test(request):
     return render(request, 'board/delete_post.html', {'board': board})
 
 ### 추가 끝
-def new_comment(request, pk):
-    # 로그인 여부 확인
-    if request.user.is_authenticated:
-        # get_object_or_404 : 알맞지 않은 pk값이 넘어오면
-        # 404 error를 발생시킨다.
-        board = get_object_or_404(Board, pk=pk)
+
+# def new_comment(request, pk):
+#     # 로그인 여부 확인
+#     if request.user.is_authenticated:
+#         # get_object_or_404 : 알맞지 않은 pk값이 넘어오면
+#         # 404 error를 발생시킨다.
+#         board = get_object_or_404(Board, pk=pk)
+#
+#         if request.method == 'POST':
+#             # 사용자가 입력한 comment를 가지고
+#             # CommentForm의 인스턴스를 생성
+#             comment_form = CommentForm(request.POST)
+#
+#             if comment_form.is_valid():
+#                 comment = comment_form.save(commit=False)
+#                 comment.board = board
+#                 comment.author = request.user
+#                 comment.save()
+#                 return redirect(comment.get_absolute_url())
+#         return redirect(board.get_absolute_url())
+#     else :
+#         raise PermissionDenied
+
+
+#완성본
+@staff_member_required
+@login_required(login_url='member:login')
+def add_comment(request, pk):
+    board = get_object_or_404(Board, pk=pk)
+    comments = Comment.objects.filter(board=board)
+    comments_exist = comments.exists()  # 댓글 존재 여부 확인
+
+    # 스태프만이 댓글을 추가할 수 있도록 확인
+    if request.user.is_staff:
+        if comments_exist:  # 댓글이 이미 존재하는 경우
+            return JsonResponse({'comments_exist': True})
+            # return HttpResponseForbidden("이미 댓글이 존재하여 추가할 수 없습니다.")
 
         if request.method == 'POST':
-            # 사용자가 입력한 comment를 가지고
-            # CommentForm의 인스턴스를 생성
             comment_form = CommentForm(request.POST)
-
             if comment_form.is_valid():
                 comment = comment_form.save(commit=False)
                 comment.board = board
-                comment.author = request.user
+                comment.member = request.user
                 comment.save()
-                return redirect(comment.get_absolute_url())
-        return redirect(board.get_absolute_url())
-    else :
-        raise PermissionDenied
+                return JsonResponse({'comments_exist': False})
+                # return redirect('board_list')
 
+        return render(request, 'board/post.html', {'form': comment_form, 'board': board})
+    else:
+        return HttpResponseForbidden("관리자만 댓글을 추가할 수 있습니다.")
 
-# @login_required(login_url='member:login')
-# def delete_post(request, pk):
-#     if request.method == 'POST':
-#         board = get_object_or_404(Board, pk=pk)
-#
-#         # 게시글 작성자 혹은 관리자만 게시글 삭제 가능
-#         if request.user == board.member or request.user.is_staff:
-#             board.delete()
-#             return redirect('board_list')  # 삭제 후 목록 페이지로 리다이렉트
-#         else:
-#             raise PermissionDenied
-#     else:
-#         return redirect('board_list')  # POST 요청이 아닌 경우 목록 페이지로 리다이렉트
-
-
-# =====================================================================
 # 지우면 안됨니다. 12월 1일 추가내용
 
 def test(request):
@@ -230,7 +209,10 @@ def temp_lstm(request):
             avg_temp=row['평균기온(°C)'],
             avg_max_temp=row['평균최고기온(°C)'],
             avg_min_temp=row['평균최저기온(°C)'],
+            storage=some_existing_instance
         )
+
+
 
     # '년월' 컬럼을 datetime 형식으로 변환
     data['년월'] = pd.to_datetime(data['년월'])
@@ -334,6 +316,8 @@ def temp_lstm(request):
             pre_avg_temp=row['예측 평균기온(°C)'],
             pre_avg_max_temp=row['예측 평균최고기온(°C)'],
             pre_avg_min_temp=row['예측 평균최저기온(°C)'],
+            storage=some_existing_instance,
+            rawdata=some_existing_instance,
         )
         predict_data.save()
 
@@ -379,7 +363,11 @@ def weather(request):
     # 데이터 검색
     region = request.GET.get('region')
     year = request.GET.get('year')
-    search_data = temp_rawdata.objects.filter(region=region, date__year=year)
+    # search_data = temp_rawdata.objects.filter(region=region, date__year=year)
+    search_data = temp_rawdata.objects.filter(region=region, date__year=year).values('id').annotate(max_id=Max('id'))
+    # 중복 제거하고 최신 데이터만 가져옴
+    search_data = temp_rawdata.objects.filter(id__in=search_data.values('max_id'))
+
     return render(request, 'board/weather.html', {'search_data':search_data})
 
 

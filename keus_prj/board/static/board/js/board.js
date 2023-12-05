@@ -40,40 +40,28 @@ var result = confirm('게시글을 삭제하시겠습니까?');
     }
 
 }
-/* 20231201 하승우 추가 */
-function confirmComment(postId) {
-    // 입력 필드에서 값 가져오기
-    var content = $('#contentInput').val();
 
-    // 댓글 데이터 생성
-    var commentData = {
-        'content': content,
-    };
+$(document).ready(function () {
+        $('#comment-form').submit(function (event) {
+            event.preventDefault();  // 기본 폼 제출 동작을 막음
 
-    var result = confirm('댓글을 작성하시겠습니까?');
-
-    if (result) {
-        var csrf_token = $("input[name='csrfmiddlewaretoken']").val();
-
-        // AJAX를 사용하여 서버로 댓글 데이터 전송
-        $.ajax({
-            type: 'POST',
-            url: 'new_comment/',  // postId를 포함한 URL 설정
-            headers: {
-                'X-CSRFToken':  csrf_token,
-            },
-            data: commentData,
-            success: function(response) {
-                // 성공적으로 댓글을 작성한 경우 해당 페이지의 특정 부분을 업데이트합니다.
-                // 예를 들어, 댓글 목록이 표시되는 div를 업데이트하는 코드를 작성할 수 있습니다.
-                $('#commentList').load(location.href + ' #commentList');
-            },
-            error: function(error) {
-                alert('댓글 작성에 실패했습니다.');
-            }
+            // Ajax 요청
+            $.ajax({
+                type: 'POST',
+                url: $(this).attr('action'),
+                data: $(this).serialize(),
+                success: function (data) {
+                    // 댓글이 이미 존재하는 경우 알림을 표시
+                    if (data.comments_exist) {
+                        alert("이미 댓글이 존재하여 추가할 수 없습니다.");
+                    } else {
+                        // 댓글 추가 성공 시 페이지 리로딩
+                        window.location.reload();
+                    }
+                }
+            });
         });
-    }
-}
+    });
 
 // 게시글 목록을 갱신하는 함수
 function updateBoardList(boards) {

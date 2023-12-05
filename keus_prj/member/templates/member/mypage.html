@@ -40,7 +40,38 @@
                     {% elif error_message %}
                         <div class="error-message">{{ error_message }}</div>
                     {% endif %}
-                    {{ update_form.as_p }}
+                    <div class="join-wrap">
+                        <div class="input-info">
+                            <div class="item">
+                                <ul>
+                                    <li>
+                                        <div class="item_input">
+                                            <span>이메일</span>
+                                            <input type="text" id="email"  placeholder="example@keus.co.kr" value="{{ update_form.email.value }}">
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="item_input">
+                                            <span>연락처</span>
+                                            <input type="text" id="phone"  placeholder="'-'제외하고 입력해주세요" value="{{ update_form.Tell.value }}">
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="item_input">
+                                            <span>새비밀번호</span>
+                                            <input type="password" id="phone"  placeholder="8~20자리 / 영문, 숫자, 특수문자 사용">
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="item_input">
+                                            <span>비밀번호 확인</span>
+                                            <input type="password" id="phone"  placeholder="비밀번호 확인">
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                     <input type="hidden" name="action" value="update_profile">
                     <div class="update-box">
                         <input type="submit" id="update-btn" value="정보 수정">

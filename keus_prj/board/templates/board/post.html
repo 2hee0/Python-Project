@@ -57,21 +57,43 @@
                                 {{ board.contents }}
                             </p>
                             <!-- CSRF 토큰 추가 -->
-                                {% if user.id == board.member or user.is_staff %}
+                            {% if user.id == board.member or user.is_staff %}
                                 <form id="deleteForm" method="POST" action="{% url 'delete_post' pk=board.id %}">
                                     {% csrf_token %}
                                     <button type="submit" onclick="return confirmDelete('{{ board.id }}')">삭제</button>
                                 </form>
                             {% endif %}
+                            <!-- 댓글 -->
+                            {% for comment in comments %}
+                                {% if comment.board == board.id %}
+                                    <p>{{ comment.content }}</p>
+                                    <p>댓글 작성자: {{ comment.member__username }}</p>
+                                    <hr>
+                                {% endif %}
+                                    {% empty %}
+                                    <p>댓글이 없습니다.</p>
+                            {% endfor %}
                             {% if user.is_staff %}
-                                <form method="post" action="{% url 'new_comment' pk=board.id %}" class="comment">
+                            <!-- 댓글 입력 폼 -->
+<!--                            {% if user.is_authenticated and user.is_staff %}-->
+<!--                                <form method="post" action="{% url 'add_comment' pk=board.id %}" class="comment">-->
+<!--                                    {% csrf_token %}-->
+<!--                                    <hr>-->
+<!--                                    <span>┗</span>-->
+<!--                                    <textarea id="comment-textarea" name="content"></textarea>-->
+<!--                                    <button type="submit" id="comment-btn">작성</button>-->
+<!--                                </form>-->
+<!--                            {% endif %}-->
+                            {% if user.is_staff %}
+                                <form id="comment-form" method="post" action="{% url 'add_comment' pk=board.id %}" class="comment">
                                     {% csrf_token %}
                                     <hr>
                                     <span>┗</span>
-                                    <input type="text" name="content" placeholder="댓글내용">
-                                    <button type="submit" onclick="confirmComment('{{ board.id }}')"><a>작성 완료</a></button>
+                                    <textarea id="comment-textarea" name="content"></textarea>
+                                    <button type="submit" id="comment-btn">작성</button>
                                 </form>
                             {% endif %}
+                          {% endif %}
                         </div>
                     {% endfor %}
                 </div>
