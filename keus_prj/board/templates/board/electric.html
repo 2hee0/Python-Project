@@ -175,12 +175,15 @@
                         <tbody>
                         {% for data in search_data %}
                             <tr>
-                                <td>{{ data.code }}</td>
+                                <td>{{ data.date|floatformat:0 }}</td>
+                                <td>{{ data.trial }}</td>
                                 <td>{{ data.region }}</td>
-                                <td>{{ data.date }}</td>
-                                <td>{{ data.avg_temp }}</td>
-                                <td>{{ data.avg_max_temp }}</td>
-                                <td>{{ data.avg_min_temp }}</td>
+                                <td>{{ data.contract }}</td>
+                                <td>{{ data.citizen }}</td>
+                                <td>{{ data.total_use }}</td>
+                                <td>{{ data.total_price }}</td>
+                                <td>{{ data.avg_price }}</td>
+
                             </tr>
                         {% endfor %}
                         </tbody>

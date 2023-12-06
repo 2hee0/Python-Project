@@ -38,6 +38,27 @@
         });
     });
 
+
+    document.getElementById('predict_ele').addEventListener('click', function() {
+        // 예측 시작 시 팝업 표시
+        alert('데이터 예측을 시작합니다. 확인버튼을 눌러주세요');
+
+        // 서버로 비동기 요청 보내기
+        fetch('predict_ele/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            // 작업이 완료되면 완료 메시지 표시
+            alert(data.message);
+        });
+    });
+
+
     document.getElementById('region').addEventListener('keypress', function(event) {
     if (event.key === 'Enter') {
         event.preventDefault();  // 기본 동작(폼 제출) 막기

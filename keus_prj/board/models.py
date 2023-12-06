@@ -140,11 +140,12 @@ class ele_rawdata_storage(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)    # log data
 
 class ele_rawdata(models.Model):
-    date = models.DateField()                   # 년월
+    date = models.FloatField()                  # 년월
     trial = models.CharField(max_length=255)    # 시구
     region = models.CharField(max_length=255)   # 시군구
-    contract = models.CharField(max_length=255) # 계약 구분
-    total_use = models.FloatField()             # 사용량
-    total_price = models.FloatField()           # 전기 요금
-    avg_price = models.FloatField()             # 평균판매단가
+    contract = models.CharField(max_length=255)     # 계약 구분
+    citizen = models.CharField(max_length=255)  # 고객호수(호)
+    total_use = models.CharField(max_length=255)    # 사용량
+    total_price = models.CharField(max_length=255)           # 전기 요금
+    avg_price = models.CharField(max_length=255)             # 평균판매단가
     storage = models.ForeignKey(ele_rawdata_storage, null=True, on_delete=models.SET_NULL)  # storage fk설정

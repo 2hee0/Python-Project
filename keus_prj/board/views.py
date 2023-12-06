@@ -365,9 +365,9 @@ def weather(request):
 
 
 def electric(request):
-    region = request.GET.get('region')
-    year = request.GET.get('year')
-    search_data = ele_rawdata.objects.filter(region=region, date__year=year)
+    trial = request.GET.get('region')
+    year = int(request.GET.get('year'))
+    search_data = ele_rawdata.objects.filter(trial=trial, date__startswith=year)
 
     return render(request, 'board/electric.html', {'search_data': search_data})
 
@@ -389,18 +389,20 @@ def ele_lstm(request):
     db_save(current_path)
 
     # 데이터 로드 및 전처리
-    original_data = pd.read_excel(file_path_model)
-    data = original_data.copy()
+    data = pd.read_excel(file_path_model)
+    data.dropna(inplace=True)
 
     for index, row in data.iterrows():
         ele_rawdata.objects.create(
-            date=row['년월'].date(),
+            date=row['년월'],
             trial=row['시구'],
             region=row['시군구'],
-            contract=row['계약 구분'],
-            total_use=row['사용량'],
-            total_price=row['전기 요금'],
-            avg_pricce=row['평균판매단가'],
+            contract=row['계약구분'],
+            citizen=row['고객호수(호)'],
+            total_use=row['사용량(kWh)'],
+            total_price=row['전기요금(원)'],
+            avg_price=row['평균판매단가(원/kWh)'],
         )
 
+    print('전력데이터 세이브 성공')
     return JsonResponse({'status': 'success', 'message': '완료되었습니다.'})
