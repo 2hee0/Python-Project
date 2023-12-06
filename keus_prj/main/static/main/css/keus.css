@@ -1278,3 +1278,45 @@ body{
     font-size: 18px;
     line-height: 18px;
 }
+
+#delete-btn {
+    height: 40px;
+    width: 90px;
+    background-color: #0059df;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
+    font-size: 16px;
+    line-height: 18px;
+    float: right;
+    margin-top: -50px;
+}
+
+
+#ctitle{
+    width: 53%;
+    text-align: left;
+    border-right: none;
+    text-indent: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: -8px
+
+}
+
+#cid{
+    width: 15%;
+    border-right: none;
+    text-indent: -25px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: -8px
+}
+
+#cdate{
+    width: 20%;
+    margin-top: -8px
+}

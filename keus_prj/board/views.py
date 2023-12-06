@@ -131,30 +131,6 @@ def delete_post_test(request):
 
     return render(request, 'board/delete_post.html', {'board': board})
 
-### 추가 끝
-
-# def new_comment(request, pk):
-#     # 로그인 여부 확인
-#     if request.user.is_authenticated:
-#         # get_object_or_404 : 알맞지 않은 pk값이 넘어오면
-#         # 404 error를 발생시킨다.
-#         board = get_object_or_404(Board, pk=pk)
-#
-#         if request.method == 'POST':
-#             # 사용자가 입력한 comment를 가지고
-#             # CommentForm의 인스턴스를 생성
-#             comment_form = CommentForm(request.POST)
-#
-#             if comment_form.is_valid():
-#                 comment = comment_form.save(commit=False)
-#                 comment.board = board
-#                 comment.author = request.user
-#                 comment.save()
-#                 return redirect(comment.get_absolute_url())
-#         return redirect(board.get_absolute_url())
-#     else :
-#         raise PermissionDenied
-
 
 #완성본
 @staff_member_required
@@ -203,6 +179,7 @@ def temp_lstm(request):
     # 데이터 로드 및 전처리
     data = pd.read_excel(file_path_model)
 
+    # 원본 파일 내용 DB저장
     for index, row in data.iterrows():
        temp_rawdata.objects.create(
             code=row['지점'],
@@ -213,8 +190,6 @@ def temp_lstm(request):
             avg_min_temp=row['평균최저기온(°C)'],
         )
 
-
-
     # '년월' 컬럼을 datetime 형식으로 변환
     data['년월'] = pd.to_datetime(data['년월'])
 
@@ -222,11 +197,21 @@ def temp_lstm(request):
     data['연'] = data['년월'].dt.year
     data['월'] = data['년월'].dt.month
 
+    # '시군구'가 '속초'이고, '연'이 2019년부터 2023년까지인 데이터 추출
+    selected_region_data = data[(data['시군구'] == '속초')]
+
+    # '연'과 '월'을 기준으로 정렬 및 인덱스 재설정
+    selected_region_data.sort_values(['연', '월'], inplace=True)
+    selected_region_data.set_index(['연', '월'], inplace=True)
+
+
     # '시군구', '연'과 '월'을 기준으로 정렬
     data.sort_values(['시군구', '연', '월'], inplace=True)
 
     # '시군구', '연'과 '월'을 기준으로 index 재설정
     data.set_index(['연', '월'], inplace=True)
+
+
 
     # '시군구' 컬럼 제외한 데이터 선택, 예측하기 위한 데이터 선별
     features = ['평균기온(°C)', '평균최고기온(°C)', '평균최저기온(°C)']
@@ -240,7 +225,7 @@ def temp_lstm(request):
     # 시퀀스 길이 정의
     seq_length = 12  # 예측에 사용할 과거 데이터의 개수
 
-    # 시퀀스 데이터 생성
+    #시퀀스 데이터 생성
     X, y = create_sequences(scaled_data, seq_length)
 
     # LSTM 모델 정의
@@ -252,10 +237,6 @@ def temp_lstm(request):
     # LSTM 모델 훈련
     model.fit(X, y, epochs=50, batch_size=16)
 
-    # 모델 평가
-    loss = model.evaluate(X, y)
-    print(f'Loss: {loss}')
-
     # 예측 데이터 생성
     predicted_data = []
 
@@ -264,6 +245,44 @@ def temp_lstm(request):
         seq = seq.reshape((1, seq_length, scaled_data.shape[1]))
         pred = model.predict(seq)
         predicted_data.append(pred)
+
+    # 2023년 10월까지의 실제 데이터와 미래 예측 데이터 생성
+    future_months = 12  # 예측할 미래 월 수
+
+    # 미래 예측 데이터 생성
+    future_data = []
+
+    # 초기 입력 시퀀스 설정
+    last_sequence = scaled_data[-seq_length:]
+
+    for i in range(future_months):
+        # 마지막으로 예측된 데이터를 기반으로 다음 월 예측
+        last_sequence = last_sequence.reshape((1, seq_length, scaled_data.shape[1]))
+        next_pred = model.predict(last_sequence)
+
+        # 예측 결과를 결과 리스트에 추가
+        future_data.append(next_pred)
+
+        # 다음 예측을 위해 시퀀스 업데이트
+        last_sequence = np.concatenate([last_sequence.squeeze()[1:], next_pred])
+
+    # 미래 예측 데이터 역정규화
+    future_data = scaler.inverse_transform(np.array(future_data).reshape(-1, scaled_data.shape[1]))
+
+    # 미래 예측 결과 출력
+    future_df = pd.DataFrame(data=future_data,
+                             columns=features,
+                             index=pd.date_range(start=pd.to_datetime(
+                                 f"{selected_region_data.index[-1][0]}-{selected_region_data.index[-1][1]:02d}-01") + pd.DateOffset(
+                                 months=1), periods=future_months, freq='M'))
+
+    # 미래 예측 결과 저장
+    result_file_name = f'미래예측결과.csv'
+    save_path = os.path.join(os.path.dirname(current_path), r'static\\bigdata\\result\\', result_file_name)
+
+    future_df.to_csv(save_path, index=False)
+    print("미래 예측 결과를 엑셀 파일로 저장했습니다.")
+    # 임시추가
 
     # 예측 데이터 역정규화
     predicted_data = scaler.inverse_transform(np.array(predicted_data).reshape(-1, scaled_data.shape[1]))
@@ -294,12 +313,13 @@ def temp_lstm(request):
     print('파일 저장 성공!')
     db_save_predict(save_path)
     print('파일 불러오기!')
+
     # 예측 결과 및 실제 데이터 출력
-    result_df.to_csv(save_path, index=False)
     print('파일 출력!',result_df)
+
     # csv 파일 저장 로직
     print('db에 경로저장 시작')
-
+    result_df.to_csv(save_path, index=False)
     print('db에 경로저장 종료')
     # result_df의 컬럼명 출력
     print(result_df.columns)
@@ -402,13 +422,13 @@ def weather(request):
 
 
 def electric(request):
-    trial = request.GET.get('region')
+    region = request.GET.get('region')
     year = request.GET.get('year',None)
     
     # none값 안나오게 설정
     year = int(year) if year is not None else 0
     
-    search_data = ele_rawdata.objects.filter(trial=trial, date__startswith=year)
+    search_data = ele_rawdata.objects.filter(region=region, date__startswith=year)
 
     return render(request, 'board/electric.html', {'search_data': search_data})
 
@@ -418,7 +438,20 @@ def introduce(request):
 
 
 def infographic(request):
-    return render(request, 'board/infographic.html')
+    file_path_model = r'C:\Users\span5\Documents\loginsample\keus_prj\board\static\bigdata\result\미래예측결과.csv'
+
+    # 데이터 로드 및 전처리
+    data = pd.read_csv(file_path_model)
+    # DataFrame을 JSON으로 변환
+    data_json = data.to_json(orient='records')
+
+    # 컬럼 이름 추출
+    columns = data.columns
+    # JSON 데이터와 컬럼 이름을 context에 추가하여 HTML 템플릿으로 전송
+    context = {'data_json': data_json, 'columns': columns}
+
+
+    return render(request, 'board/infographic.html', context)
 
 
 def ele_lstm(request):

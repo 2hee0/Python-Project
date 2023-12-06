@@ -48,7 +48,15 @@
                     {% for board in boards %}
                         <ul onclick="toggleContent(this)">
                             <li id="bnum">{{ forloop.counter }}</li>
-                            <li id="btitle">[{{ board.Board_Status }}]{{ board.title }}</li>
+                            <li id="btitle">
+                                {% for comment in comments %}
+                                    {% if comment.board == board.id %}
+                                        [{{ board.Board_Status }}]{{ board.title }}<span>답변완료</span>
+                                    {% else %}
+                                        [{{ board.Board_Status }}]{{ board.title }}<span>답변대기</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </li>
                             <li id="bid">{{  board.member__username|default:"작성자 없음" }}</li>
                             <li id="bdate">{{ board.created_at }}</li>
                         </ul>
@@ -60,30 +68,25 @@
                             {% if user.id == board.member or user.is_staff %}
                                 <form id="deleteForm" method="POST" action="{% url 'delete_post' pk=board.id %}">
                                     {% csrf_token %}
-                                    <button type="submit" onclick="return confirmDelete('{{ board.id }}')">삭제</button>
+                                    <button type="submit" id="delete-btn" onclick="return confirmDelete('{{ board.id }}')">삭제</button>
                                 </form>
                             {% endif %}
                             <!-- 댓글 -->
                             {% for comment in comments %}
+                            <form class="comment">
+                                <hr>
                                 {% if comment.board == board.id %}
-                                    <p>{{ comment.content }}</p>
-                                    <p>댓글 작성자: {{ comment.member__username }}</p>
-                                    <hr>
+                                <ul class="comment-info">
+                                    <span>┗</span><li id="ctitle" style="text-align: left;">{{ comment.content }}</li>
+                                    <li id="cid">{{ comment.member__username }}</li>
+                                    <li id="cdate">{{ comment.created_at }}</li>
+                                </ul>
                                 {% endif %}
                                     {% empty %}
-                                    <p>댓글이 없습니다.</p>
+                                    <br>
+                            </form>
                             {% endfor %}
-                            {% if user.is_staff %}
                             <!-- 댓글 입력 폼 -->
-<!--                            {% if user.is_authenticated and user.is_staff %}-->
-<!--                                <form method="post" action="{% url 'add_comment' pk=board.id %}" class="comment">-->
-<!--                                    {% csrf_token %}-->
-<!--                                    <hr>-->
-<!--                                    <span>┗</span>-->
-<!--                                    <textarea id="comment-textarea" name="content"></textarea>-->
-<!--                                    <button type="submit" id="comment-btn">작성</button>-->
-<!--                                </form>-->
-<!--                            {% endif %}-->
                             {% if user.is_staff %}
                                 <form id="comment-form" method="post" action="{% url 'add_comment' pk=board.id %}" class="comment">
                                     {% csrf_token %}

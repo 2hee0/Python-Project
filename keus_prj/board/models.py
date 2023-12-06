@@ -58,6 +58,9 @@ class Board(models.Model):
     def get_absolute_url(self):
         return f'/board/{self.pk}'
 
+    def comment_count(self):
+        return Comment.objects.filter(board=self).count()
+
 
 
 class Comment(models.Model):
