@@ -93,3 +93,15 @@ function updateBoardList(boards) {
     }
 }
 
+// 카테고리 선택 유효성 검사
+function validateCategory() {
+        var category = document.querySelector('select[name="category"]').value;
+
+        if (category === "") {
+            alert("카테고리를 선택해주세요.");
+            return false; // 폼 제출 막기
+        }
+
+        return true; // 폼 제출 허용
+    }
+

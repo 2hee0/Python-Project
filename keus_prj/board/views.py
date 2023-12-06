@@ -1,7 +1,8 @@
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import F
-from .models import Board, Category, Comment, temp_rawdata, temp_predictData, temp_predictData_storage, Post, ele_rawdata_storage, ele_rawdata
+from .models import Board, Category, Comment, temp_rawdata, temp_predictData, temp_predictData_storage, Post, ele_rawdata_storage, ele_rawdata, temp_rawdata_storage
 from django.views.generic import ListView
 from django.db import transaction
 from django.shortcuts import render, redirect, get_object_or_404
@@ -195,7 +196,9 @@ def temp_lstm(request):
     current_path = os.path.abspath(__file__)
     file_path_model = os.path.join(os.path.dirname(current_path), r'static\\bigdata\\온도 원본.xlsx')
 
-    db_save(current_path)
+    # 'static/bigdata/온도 원본.xlsx' 파일의 절대 경로를 만듦
+    file_path = os.path.join(os.path.dirname(current_path), 'static', 'bigdata', '온도 원본.xlsx')
+    db_save(file_path)
 
     # 데이터 로드 및 전처리
     data = pd.read_excel(file_path_model)
@@ -289,14 +292,14 @@ def temp_lstm(request):
     result_file_name = f'온도 예측데이터(전체)_{creation_date_str}.csv'
     save_path = os.path.join(os.path.dirname(current_path), r'static\\bigdata\\result\\',result_file_name)
     print('파일 저장 성공!')
-
+    db_save_predict(save_path)
     print('파일 불러오기!')
     # 예측 결과 및 실제 데이터 출력
     result_df.to_csv(save_path, index=False)
     print('파일 출력!',result_df)
     # csv 파일 저장 로직
     print('db에 경로저장 시작')
-    db_save(save_path)
+
     print('db에 경로저장 종료')
     # result_df의 컬럼명 출력
     print(result_df.columns)
@@ -339,12 +342,31 @@ def create_sequences(data, seq_length):
 # DB에 파일 저장
 def db_save(path):
     # 새로운 인스턴스 생성
+    save_predictData_storage = temp_rawdata_storage()
+    # 경로 저장, log 생성
+    save_predictData_storage.csv_path = os.path.join(path)
+    save_predictData_storage.created_at = datetime.now()
+    # 저장
+    save_predictData_storage.save()
+
+def db_save(path):
+    # 새로운 인스턴스 생성
+    save_rawdata_storage = temp_rawdata_storage()
+    # 경로 저장, log 생성
+    save_rawdata_storage.csv_path = os.path.join(path)
+    save_rawdata_storage.created_at = datetime.now()
+    # 저장
+    save_rawdata_storage.save()
+
+def db_save_predict(path):
+    # 새로운 인스턴스 생성
     save_predictData_storage = temp_predictData_storage()
     # 경로 저장, log 생성
     save_predictData_storage.csv_path = os.path.join(path)
     save_predictData_storage.created_at = datetime.now()
     # 저장
     save_predictData_storage.save()
+
 
 def search_view(request):
     region = request.GET.get('region', None)
@@ -361,12 +383,31 @@ def weather(request):
     year = request.GET.get('year')
     search_data = temp_rawdata.objects.filter(region=region, date__year=year)
 
-    return render(request, 'board/weather.html', {'search_data':search_data})
+    try:
+        # 최신 파일 가져오기
+        storage = temp_rawdata_storage.objects.order_by('-created_at').first()
+
+        # 파일 경로 얻기
+        if storage and storage.csv_path:
+            file_path = os.path.join(settings.MEDIA_URL, storage.csv_path)
+        else:
+            file_path = None
+
+    except temp_rawdata_storage.DoesNotExist:
+        # 데이터가 없을 때
+        storage = None
+        file_path = None
+
+    return render(request, 'board/weather.html', {'search_data':search_data, 'storage':file_path})
 
 
 def electric(request):
     trial = request.GET.get('region')
-    year = int(request.GET.get('year'))
+    year = request.GET.get('year',None)
+    
+    # none값 안나오게 설정
+    year = int(year) if year is not None else 0
+    
     search_data = ele_rawdata.objects.filter(trial=trial, date__startswith=year)
 
     return render(request, 'board/electric.html', {'search_data': search_data})
@@ -386,7 +427,13 @@ def ele_lstm(request):
     current_path = os.path.abspath(__file__)
     file_path_model = os.path.join(os.path.dirname(current_path), r'static\\bigdata\\전력 원본 데이터.xlsx')
 
-    db_save(current_path)
+    # 새로운 인스턴스 생성
+    save_rawdata_storage = ele_rawdata_storage()
+    # 경로 저장, log 생성
+    save_rawdata_storage.csv_path = os.path.join(file_path_model)
+    save_rawdata_storage.created_at = datetime.now()
+    # 저장
+    save_rawdata_storage.save()
 
     # 데이터 로드 및 전처리
     data = pd.read_excel(file_path_model)

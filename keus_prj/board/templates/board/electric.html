@@ -194,9 +194,13 @@
                     <p>전력 데이터를 확인하려면 검색을 진행해주세요.</p>
                 {% endif %}
             </div>    
-            <a href="" download >
-                <button type="button" id="download">다운로드</button>
-            </a>
+            {% if storage_instance %}
+                <a href="{{ storage_instance.csv_path }}" download>
+                    <button type="button" id="download">다운로드</button>
+                </a>
+            {% else %}
+                <p>다운로드 가능한 파일이 없습니다.</p>
+            {% endif %}
         </div>
     </div>
 </body>
